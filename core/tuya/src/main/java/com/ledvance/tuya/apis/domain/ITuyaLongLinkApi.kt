@@ -1,0 +1,17 @@
+package com.ledvance.tuya.apis.domain
+
+import com.ledvance.tuya.beans.DeviceState
+import com.ledvance.tuya.beans.TuyaHomeChangeState
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * @author : jason yin
+ * Email : j.yin@ledvance.com
+ * Created date 2025/9/5 08:41
+ * Describe : ITuyaLongLinkApi
+ */
+interface ITuyaLongLinkApi {
+    fun getHomeStatusFlow(homeId: Long): Flow<TuyaHomeChangeState>
+
+    fun getHomeDeviceStateFlow(): Flow<Map<String, DeviceState>>
+}

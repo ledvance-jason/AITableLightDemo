@@ -17,15 +17,14 @@ android {
         versionCode = providers.gradleProperty("versionCode").orNull?.toIntOrNull() ?: 0
         versionName = providers.gradleProperty("versionName").orNull ?: ""
         setProperty("archivesBaseName", "LdvAITableLight-$versionName[$versionCode]_${getDate()}")
-        androidResources {
-            val language = listOf("en")
-            localeFilters.addAll(language)
-        }
     }
 
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            pickFirsts.add("lib/*/libc++_shared.so")
         }
     }
 }
@@ -33,6 +32,7 @@ android {
 dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.utils)
+    implementation(projects.core.tuya)
     debugImplementation(projects.core.log)
     releaseImplementation(projects.core.logNoOp)
 
@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.accompanist.permissions)
 
     implementation(libs.navigation3.runtime)
     implementation(libs.navigation3.ui)

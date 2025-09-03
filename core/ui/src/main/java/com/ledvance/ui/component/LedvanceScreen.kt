@@ -6,16 +6,21 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -24,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isUnspecified
@@ -49,6 +55,7 @@ fun LedvanceScreen(
     backTitle: String? = null,
     title: String? = null,
     actionIconPainter: Painter? = null,
+    enableTitleActionIcon: Boolean = false,
     onBackPressed: (() -> Unit)? = null,
     onActionPressed: () -> Unit = {},
     rightIconContentDescription: String? = "",
@@ -100,7 +107,7 @@ fun LedvanceScreen(
                         )
                         .then(modifier),
                 ) {
-                    if (backTitle != null || actionIconPainter != null) {
+                    if (backTitle != null || (actionIconPainter != null && !enableTitleActionIcon)) {
                         LedvanceTopLayout(
                             backTitle = backTitle,
                             onBackClick = onBackPressed,
@@ -110,12 +117,30 @@ fun LedvanceScreen(
                         )
                     }
                     if (!title.isNullOrEmpty()) {
-                        Text(
-                            text = title,
-                            style = AppTheme.typography.headlineSmall,
-                            color = AppTheme.colors.primary,
-                            modifier = Modifier.padding(start = 24.dp, top = 36.dp, bottom = 26.dp)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 36.dp, start = 24.dp, end = 24.dp, bottom = 26.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = title,
+                                style = AppTheme.typography.headlineSmall,
+                                color = AppTheme.colors.primary,
+                                modifier = Modifier.weight(1f)
+                            )
+                            if (actionIconPainter != null && enableTitleActionIcon) {
+                                IconButton(onClick = onActionPressed) {
+                                    Icon(
+                                        painter = actionIconPainter,
+                                        contentDescription = "",
+                                        tint = AppTheme.colors.primary,
+                                        modifier = Modifier.size(26.dp)
+                                    )
+                                }
+                            }
+
+                        }
                     }
                     this.content()
                 }

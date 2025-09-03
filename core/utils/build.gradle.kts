@@ -11,5 +11,6 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.datastore)
     implementation(libs.timber)
+    implementation(libs.fastjson)
     implementation(libs.core.ktx)
 }

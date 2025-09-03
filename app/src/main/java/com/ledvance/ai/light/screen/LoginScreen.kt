@@ -12,10 +12,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ledvance.ai.light.viewmodel.LoginViewModel
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LoadingCard
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
  * Describe : LoginScreen
  */
 @Composable
-fun LoginScreen() {
+fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), onLoginSuccess: () -> Unit) {
     val scope = rememberCoroutineScope()
     var loading by remember { mutableStateOf(false) }
     if (loading) {
@@ -39,8 +40,11 @@ fun LoginScreen() {
             ) {
                 scope.launch {
                     loading = true
-                    delay(2000)
+                    val result = viewModel.login()
                     loading = false
+                    if (result) {
+                        onLoginSuccess.invoke()
+                    }
                 }
             }
         }

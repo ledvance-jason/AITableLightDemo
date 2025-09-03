@@ -17,9 +17,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.ledvance.ai.light.model.DarkThemeMode
 import com.ledvance.ai.light.navigation.MainNavigation
 import com.ledvance.ai.light.utils.DataStoreKeys
+import com.ledvance.tuya.TuyaSdkManager
 import com.ledvance.ui.theme.LedvanceTheme
 import com.ledvance.utils.extensions.getInt
 import com.ledvance.utils.extensions.isSystemInDarkTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -40,6 +43,11 @@ class MainActivity : ComponentActivity() {
                 MainNavigation()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        TuyaSdkManager.release()
     }
 
     private fun initDarkTheme(onDarkThemeChanged: (Boolean) -> Unit) {

@@ -9,9 +9,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.ledvance.ui.theme.AppTheme
 
 /**
@@ -24,28 +25,28 @@ import com.ledvance.ui.theme.AppTheme
 
 @Composable
 fun LoadingCard() {
-    Dialog(
-        onDismissRequest = {}, properties = DialogProperties(
-            usePlatformDefaultWidth = true,
-            decorFitsSystemWindows = false
-        )
+    Popup(
+        alignment = Alignment.Center,
+        properties = PopupProperties(
+            focusable = false,
+            dismissOnClickOutside = false,
+            dismissOnBackPress = false
+        ),
+        onDismissRequest = {}
     ) {
-        Box(
-            contentAlignment = Alignment.Center
+        Card(
+            shape = RoundedCornerShape(15.dp),
+            elevation = CardDefaults.elevatedCardElevation(10.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Card(
-                shape = RoundedCornerShape(15.dp),
-                elevation = CardDefaults.elevatedCardElevation(10.dp),
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(28.dp)
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(28.dp)
-                ) {
-                    CircularProgressIndicator(
-                        color = AppTheme.colors.primary,
-                        strokeWidth = 4.dp
-                    )
-                }
+                CircularProgressIndicator(
+                    color = AppTheme.colors.primary,
+                    strokeWidth = 4.dp
+                )
             }
         }
     }

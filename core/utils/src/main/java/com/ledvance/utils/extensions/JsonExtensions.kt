@@ -1,6 +1,6 @@
 package com.ledvance.utils.extensions
 
-import kotlinx.serialization.json.Json
+import com.alibaba.fastjson2.JSON
 
 /**
  * @author : jason yin
@@ -8,20 +8,12 @@ import kotlinx.serialization.json.Json
  * Created date 2025/5/30 08:30
  * Describe : JsonExtensions
  */
-val jsonFormatter by lazy {
-    Json {
-        ignoreUnknownKeys = true // 忽略多余字段
-        prettyPrint = false
-        isLenient = true
-        encodeDefaults = true
-    }
-}
 
 /**
  * 将对象序列化为 JSON 字符串
  */
 fun Any?.toJson(): String? = try {
-    jsonFormatter.encodeToString(this)
+    JSON.toJSONString(this)
 } catch (e: Exception) {
     e.printStackTrace()
     null
@@ -31,7 +23,7 @@ fun Any?.toJson(): String? = try {
  * 将 JSON 字符串反序列化为对象，类型自动推断
  */
 inline fun <reified T> String.jsonAsOrNull(): T? = try {
-    jsonFormatter.decodeFromString<T>(this)
+    JSON.parseObject(this, T::class.java)
 } catch (e: Exception) {
     e.printStackTrace()
     null

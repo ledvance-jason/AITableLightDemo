@@ -26,12 +26,12 @@ fun MainScreen() {
         listOf(
             LedvanceBottomItem(
                 iconResId = R.drawable.ic_home,
-                titleResId = com.ledvance.ai.light.R.string.home,
+                titleResId = R.string.home,
                 data = MainBottomTab.Home
             ),
             LedvanceBottomItem(
                 iconResId = R.drawable.ic_more,
-                titleResId = com.ledvance.ai.light.R.string.more,
+                titleResId = R.string.more,
                 data = MainBottomTab.More
             ),
         )

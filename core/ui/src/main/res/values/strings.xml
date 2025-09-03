@@ -1,53 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="absence_level">"Absence Level:"</string>
-    <string name="adjust_driver_button">"Adjust Driver Settings"</string>
-    <string name="adjust_driver_save_button">"Write Changed Settings to Driver"</string>
-    <string name="adjust_driver_title">"Adjust Driver"</string>
-    <string name="back">"Back"</string>
-    <string name="back_without_changes">"Back (without Changes)"</string>
-    <string name="cancel">"Cancel"</string>
-    <string name="driver_operating_mode">"Mode:"</string>
-    <string name="driver_operating_mode_corridor">"Corridor Function"</string>
-    <string name="driver_operating_mode_dali">"DALI"</string>
-    <string name="driver_operating_mode_push">"Push Dim"</string>
-    <string name="fade_in_time">"Fade in Time:"</string>
-    <string name="fade_out_time">"Fade out Time:"</string>
-    <string name="got_it">"Got it"</string>
-    <string name="gtin">"GTIN:"</string>
-    <string name="invalid_param_dialog_content">"Please input the value range %1$s ... %2$s"</string>
-    <string name="invalid_param_dialog_title">"Invalid Param Value"</string>
-    <string name="ldv_alert_read_error2">"Tag No connected"</string>
-    <string name="ldv_alert_read_error3">"Fail to determine NDEF status. Please try again."</string>
-    <string name="ldv_alert_read_error4">"More than 1 tags was found. Please present only 1 tag."</string>
-    <string name="ldv_alert_read_error5">"Tag not valid."</string>
-    <string name="ldv_alert_read_error6">"Connection error. Please try again."</string>
-    <string name="link_to_data_sheet">"Link to Data Sheet :"</string>
-    <string name="nfc_disable_dialog_content">"The NFC function is required, please enable it while app is running."</string>
-    <string name="nfc_disable_dialog_title">"NFC is disable"</string>
-    <string name="nfc_not_support_dialog_content">"NFC function is not available on your phone, app will be closed soon."</string>
-    <string name="nfc_not_support_dialog_title">"NFC Not Supported"</string>
-    <string name="nfc_operation_common_progress_verify">"Verifying data."</string>
-    <string name="nfc_operation_read_progress_fail">"Read failed!"</string>
-    <string name="nfc_operation_read_progress_programming">"Reading data from driver."</string>
-    <string name="nfc_operation_read_progress_success">"Read successfully."</string>
-    <string name="nfc_operation_write_progress_fail">"Changes Not updated"</string>
-    <string name="nfc_operation_write_progress_programming">"Programming, write data to driver."</string>
-    <string name="nfc_operation_write_progress_success">"Changes updated successfully!"</string>
-    <string name="ok">"OK"</string>
-    <string name="output_current_actually_set">"Output Current actually set :"</string>
-    <string name="output_current_range">"Output Current Range :"</string>
-    <string name="output_level_in_dc_operation">"Output Level in DC Operation:"</string>
-    <string name="output_power">"Output Power:"</string>
-    <string name="presence_level">"Presence Level:"</string>
-    <string name="product_information">"Product Information"</string>
-    <string name="read_driver_button">"Read Settings from Driver"</string>
-    <string name="read_error_dialog_content">"Try to bring the smartphone closer to the antenna."</string>
-    <string name="read_error_dialog_title">"Failed to read out the driver"</string>
-    <string name="run_on_time">"Run on Time:"</string>
-    <string name="search_tips">"To connect the smartphone to the driver, move the NFC area of your smartphone close to the marked NFC area of the driver."</string>
-    <string name="set_output_current">"Set Output Current:"</string>
-    <string name="welcome_title">"Welcome to
-FIELD ASSISTANT"</string>
-    <string name="write_driver_button">"Write Settings to Driver"</string>
+    <string name="home">Home</string>
+    <string name="more">More</string>
 </resources>

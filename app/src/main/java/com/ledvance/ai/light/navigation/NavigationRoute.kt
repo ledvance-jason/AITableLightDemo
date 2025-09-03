@@ -8,13 +8,16 @@ import kotlinx.serialization.Serializable
  * Created date 2025/9/2 11:28
  * Describe : NavigationRoute
  */
-sealed interface NavigationRoute {
-    @Serializable
-    data object Main : NavigationRoute
+sealed interface NavigationRoute
 
-    @Serializable
-    data object Login : NavigationRoute
+@Serializable
+data object MainRoute : NavigationRoute
 
-    @Serializable
-    data object More : NavigationRoute
-}
+@Serializable
+data object LoginRoute : NavigationRoute
+
+@Serializable
+data class DevicePanelRoute(val devId: String) : NavigationRoute
+
+@Serializable
+data object MoreRoute : NavigationRoute

@@ -1,5 +1,3 @@
 <resources>
-    <string name="app_name">LdvAITableLight</string>
-    <string name="home">Home</string>
-    <string name="more">More</string>
+    <string name="app_name">AILight</string>
 </resources>

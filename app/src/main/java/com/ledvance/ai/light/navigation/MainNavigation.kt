@@ -4,15 +4,20 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.ledvance.ai.light.screen.DevicePanelScreen
 import com.ledvance.ai.light.screen.HomeScreen
 import com.ledvance.ai.light.screen.LoginScreen
-import com.ledvance.ai.light.screen.MainScreen
+import com.ledvance.ai.light.viewmodel.UserViewModel
+import timber.log.Timber
 
 /**
  * @author : jason yin
@@ -21,8 +26,11 @@ import com.ledvance.ai.light.screen.MainScreen
  * Describe : MainNavigation
  */
 @Composable
-fun MainNavigation() {
-    val backStack = rememberMutableStateListOf<NavigationRoute>(NavigationRoute.Login)
+fun MainNavigation(userViewModel: UserViewModel = hiltViewModel()) {
+    val isLogin by userViewModel.isLoginFlow.collectAsStateWithLifecycle()
+    Timber.tag("TAG").i("MainNavigation: isLogin:$isLogin")
+    val startRoute = if (isLogin) MainRoute else LoginRoute
+    val backStack = rememberMutableStateListOf(startRoute)
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
@@ -47,11 +55,19 @@ fun MainNavigation() {
                     slideOutHorizontally(targetOffsetX = { it })
         },
         entryProvider = entryProvider {
-            entry<NavigationRoute.Main> {
+            entry<MainRoute> {
                 HomeScreen()
             }
-            entry<NavigationRoute.Login> {
-                LoginScreen()
+            entry<LoginRoute> {
+                LoginScreen(onLoginSuccess = {
+                    backStack.add(MainRoute)
+                    backStack.removeAll { it is LoginRoute }
+                })
+            }
+            entry<DevicePanelRoute> {
+                DevicePanelScreen(devId = it.devId, onBackPressed = {
+                    backStack.removeLastOrNull()
+                })
             }
         })
 }

@@ -17,6 +17,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
+        maven { setUrl("https://maven-other.tuya.com/repository/maven-releases/") }
+        maven { setUrl("https://maven-other.tuya.com/repository/maven-commercial-releases/") }
+        maven { setUrl("https://jitpack.io") }
+        maven { setUrl("https://maven.aliyun.com/repository/jcenter") }
+
     }
 }
 
@@ -29,4 +35,5 @@ include(":core:ui")
 include(":core:utils")
 //include(":core:database")
 include(":core:log-no-op")
- 
+include(":core:tuya")
+include(":aars:tuya")

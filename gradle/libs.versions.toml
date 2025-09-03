@@ -1,6 +1,6 @@
 [versions]
 compileSdk = "36"
-minSdk = "23"
+minSdk = "26"
 targetSdk = "36"
 agp = "8.12.2"
 kotlin = "2.2.10"
@@ -15,7 +15,7 @@ core-ktx = "1.17.0"
 accompanist = "0.37.3"
 room = "2.7.2"
 startup-runtime = "1.2.0"
-navigation3 = "1.0.0-alpha08"
+navigation3 = "1.0.0-alpha07"
 hilt = "2.57.1"
 hilt-ext = "1.2.0"
 hilt-navigation-compose = "1.2.0"
@@ -31,6 +31,19 @@ navigation = "2.9.3"
 splashscreen = "1.0.1"
 material = "1.12.0"
 media3 = "1.8.0"
+fastjson = "2.0.58"
+okhttp = "5.1.0"
+
+tuya-sdk = "6.7.3"
+tuya-bizbundle-bom = "6.7.12"
+tuya-ipc = "6.7.0"
+tuya-sweeper = "6.0.5"
+tuya-outdoor = "6.1.3"
+tuya-lock = "6.0.1"
+tuya-expansion = "6.7.0"
+tuya-theme = "2.0.6"
+tuya-theme-plugin = "2.0.5"
+tuya-audio-file-recorder = "1.0.4"
 
 android-desugar-jdk-libs = "2.1.5"
 junit = "4.13.2"
@@ -120,6 +133,51 @@ browser = { group = "androidx.browser", name = "browser", version.ref = "browser
 media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 media3-ui-compose = { group = "androidx.media3", name = "media3-ui-compose", version.ref = "media3" }
+fastjson = { group = "com.alibaba", name = "fastjson", version.ref = "fastjson" }
+okhttp3-urlconnection = { group = "com.squareup.okhttp3", name = "okhttp-urlconnection", version.ref = "okhttp" }
+
+thingsmart = { group = "com.thingclips.smart", name = "thingsmart", version.ref = "tuya-sdk" }
+thingsmart-theme = { group = "com.thingclips.smart", name = "thingsmart-theme-open", version.ref = "tuya-theme" }
+thingsmart-theme-plugin = { group = "com.thingclips.smart", name = "thingsmart-theme-open-plugin", version.ref = "tuya-theme-plugin" }
+thingsmart-ipc = { group = "com.thingclips.smart", name = "thingsmart-ipcsdk", version.ref = "tuya-ipc" }
+thingsmart-lock = { group = "com.thingclips.smart", name = "thingsmart-lock-sdk", version.ref = "tuya-lock" }
+thingsmart-sweeper = { group = "com.thingclips.smart", name = "sweeper", version.ref = "tuya-sweeper" }
+thingsmart-outdoor = { group = "com.thingclips.smart", name = "thingsmart-outdoor-sdk", version.ref = "tuya-outdoor" }
+thingsmart-expansion = { group = "com.thingclips.smart", name = "thingsmart-expansion-sdk", version.ref = "tuya-expansion" }
+thingsmart-bizbundle-bom = { group = "com.thingclips.smart", name = "thingsmart-BizBundlesBom", version.ref = "tuya-bizbundle-bom" }
+thingsmart-bizbundle-family = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-family" }
+thingsmart-bizbundle-deviceactivator = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-device_activator" }
+thingsmart-bizbundle-qrcode = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-qrcode_mlkit" }
+thingsmart-bizbundle-panel = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-panel" }
+thingsmart-bizbundle-basekit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-basekit" }
+thingsmart-bizbundle-bizkit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-bizkit" }
+thingsmart-bizbundle-devicekit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-devicekit" }
+thingsmart-bizbundle-mediakit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-mediakit" }
+thingsmart-bizbundle-mapkit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-mapkit" }
+thingsmart-bizbundle-homekit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-homekit" }
+thingsmart-bizbundle-p2pkit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-p2pkit" }
+thingsmart-bizbundle-ipckit = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-ipckit" }
+thingsmart-bizbundle-control = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-control" }
+thingsmart-bizbundle-scene = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-scene" }
+thingsmart-bizbundle-glocation = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-location_google" }
+thingsmart-bizbundle-groupmanager = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-groupmanager" }
+thingsmart-bizbundle-panelmore = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-panelmore" }
+thingsmart-bizbundle-ota = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-ota" }
+thingsmart-bizbundle-camera = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-camera" }
+thingsmart-bizbundle-camerapanel = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-camera_panel" }
+thingsmart-bizbundle-cloudstorage = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-cloud_storage" }
+thingsmart-bizbundle-message = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-message" }
+thingsmart-bizbundle-feedback = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-feedback" }
+thingsmart-bizbundle-thirdparty = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-amazon_google_bind" }
+thingsmart-bizbundle-thirdservice = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-third_service" }
+thingsmart-bizbundle-social = { group = "com.thingclips.smart", name = "thingsmart-social_auth_manager" }
+thingsmart-bizbundle-socialui = { group = "com.thingclips.smart", name = "thingsmart-social_auth_manager_ui" }
+thingsmart-bizbundle-share = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-share" }
+thingsmart-bizbundle-lightscene = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-light_scene" }
+thingsmart-bizbundle-mall = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-mall" }
+thingsmart-bizbundle-miniapp = { group = "com.thingclips.smart", name = "thingsmart-bizbundle-miniapp" }
+thingsmart-bizbundle-aacclean = { group = "com.thingclips.smart", name = "thingsmart-aac-clean-kt" }
+thingsmart-audio-file-recorder = { group = "com.thingclips.smart", name = "thingsmart-audio-file-recorder-sdk", version.ref = "tuya-audio-file-recorder" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }

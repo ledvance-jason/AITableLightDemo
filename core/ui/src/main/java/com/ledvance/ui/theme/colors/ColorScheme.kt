@@ -21,6 +21,7 @@ class ColorScheme(
     val screenBackground: Color,
 
     val buttonBackground: Color,
+    val buttonGreyBackground: Color,
     val buttonContent: Color,
     val buttonBorderBrush: Brush,
 
@@ -42,6 +43,7 @@ class ColorScheme(
     val textFieldBackground: Color,
 
     val screenSecondaryBackground: Color,
+    val offline: Color,
 )
 
 fun lightColorScheme(
@@ -55,6 +57,7 @@ fun lightColorScheme(
     screenSecondaryBackground: Color = GreyF3F3F3,
     buttonContent: Color = Color.White,
     buttonBackground: Color = Orange,
+    buttonGreyBackground: Color = Grey666666,
     buttonBorderBrush: Brush = Brush.horizontalGradient(
         listOf(Color.Transparent, Color.Transparent)
     ),
@@ -72,6 +75,7 @@ fun lightColorScheme(
     textFieldBorder: Color = GreyC4C4C4,
     textFieldSecondaryBorder: Color = GreyC4C4C4,
     textFieldBackground: Color = Color.Transparent,
+    offline: Color = Grey666666,
 ): ColorScheme {
     return ColorScheme(
         primary = primary,
@@ -82,6 +86,7 @@ fun lightColorScheme(
         secondaryDivider = secondaryDivider,
         screenBackground = screenBackground,
         buttonBackground = buttonBackground,
+        buttonGreyBackground = buttonGreyBackground,
         buttonBorderBrush = buttonBorderBrush,
         buttonContent = buttonContent,
         dialogTitle = dialogTitle,
@@ -99,6 +104,7 @@ fun lightColorScheme(
         textFieldSecondaryBorder = textFieldBorder,
         screenSecondaryBackground = screenSecondaryBackground,
         textFieldBackground = textFieldBackground,
+        offline = offline,
     )
 }
 
@@ -112,6 +118,7 @@ fun darkColorScheme(
     screenBackground: Color = BLACK1E1F23,
     screenSecondaryBackground: Color = Black30343C,
     buttonBackground: Color = Black30343C,
+    buttonGreyBackground: Color = Grey666666,
     buttonContent: Color = OrangeFF8857,
     buttonBorderBrush: Brush = Brush.horizontalGradient(
         listOf(OrangeFF8857, Purple63335E)
@@ -130,6 +137,7 @@ fun darkColorScheme(
     textFieldBorder: Color = GreyC4C4C4,
     textFieldSecondaryBorder: Color = Grey666666,
     textFieldBackground: Color = Black30343C,
+    offline: Color = Grey666666,
 ): ColorScheme {
     return ColorScheme(
         primary = primary,
@@ -140,6 +148,7 @@ fun darkColorScheme(
         secondaryDivider = secondaryDivider,
         screenBackground = screenBackground,
         buttonBackground = buttonBackground,
+        buttonGreyBackground = buttonGreyBackground,
         buttonContent = buttonContent,
         buttonBorderBrush = buttonBorderBrush,
         dialogTitle = dialogTitle,
@@ -157,5 +166,6 @@ fun darkColorScheme(
         textFieldSecondaryBorder = textFieldBorder,
         screenSecondaryBackground = screenSecondaryBackground,
         textFieldBackground = textFieldBackground,
+        offline = offline,
     )
 }

@@ -1,6 +1,5 @@
 package com.ledvance.ai.light.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -26,9 +21,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
-import com.ledvance.tuya.ktx.getSwitchState
 import com.ledvance.tuya.ktx.isSupportSwitch
 import com.ledvance.ui.R
+import com.ledvance.ui.component.LedvanceSwitch
 import com.ledvance.ui.extensions.debouncedClickable
 import com.ledvance.ui.theme.AppTheme
 import com.thingclips.smart.sdk.bean.DeviceBean
@@ -41,12 +36,20 @@ import timber.log.Timber
  * Describe : DeviceItem
  */
 @Composable
-fun DeviceItem(device: DeviceBean, onClick: (DeviceBean) -> Unit) {
-    val isOnline by rememberUpdatedState(device.isOnline)
+fun DeviceItem(
+    device: DeviceBean,
+    isOnline: Boolean,
+    switch: Boolean,
+    onSwitchChange: (DeviceBean, Boolean) -> Unit,
+    onClick: (DeviceBean) -> Unit
+) {
     val colorFilter = remember {
         ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0F) })
     }
-    Timber.tag("DeviceBean").i("DeviceItem: ${device.isSupportSwitch()} ${device.getSwitchState()}")
+    Timber.tag("DeviceBean").i(
+        "DeviceItem: " +
+                "${device.is433SubDev()} ${device.is433Wifi()} ${device.isThreadSubDev} ${device.isInfraredSubDev}"
+    )
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.screenBackground),
@@ -76,11 +79,10 @@ fun DeviceItem(device: DeviceBean, onClick: (DeviceBean) -> Unit) {
                         tint = AppTheme.colors.offline
                     )
                 } else if (device.isSupportSwitch()) {
-                    Switch(
-                        checked = device.isOnline,
-                        onCheckedChange = { },
+                    LedvanceSwitch(
+                        checked = switch,
+                        onCheckedChange = { onSwitchChange.invoke(device, it) },
                         modifier = Modifier,
-                        colors = SwitchDefaults.colors(checkedThumbColor = AppTheme.colors.primary)
                     )
                 }
             }

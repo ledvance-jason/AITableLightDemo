@@ -52,13 +52,13 @@ fun LedvanceTopLayout(
                     painter = painterResource(R.drawable.ic_back),
                     contentDescription = "back",
                     modifier = Modifier.size(20.dp),
-                    tint = AppTheme.colors.title
+                    tint = AppTheme.colors.primary
                 )
                 Text(
                     text = backTitle,
                     style = AppTheme.typography.bodyLarge,
                     maxLines = 1,
-                    color = AppTheme.colors.title,
+                    color = AppTheme.colors.primary,
                     modifier = Modifier.padding(start = 5.dp),
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -71,6 +71,7 @@ fun LedvanceTopLayout(
             Icon(
                 painter = rightIconPainter,
                 contentDescription = rightIconContentDescription,
+                tint = AppTheme.colors.primary,
                 modifier = Modifier
                     .size(26.dp)
                     .debouncedClickable {

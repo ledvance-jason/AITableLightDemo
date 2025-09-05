@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.tracing.ktx)
     implementation(libs.metrics.performance)
     implementation(libs.coil.compose)
+    implementation(libs.coil.okhttp)
     debugImplementation(libs.leakcanary)
 }
 

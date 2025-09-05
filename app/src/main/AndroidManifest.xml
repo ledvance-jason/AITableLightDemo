@@ -5,7 +5,11 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        tools:node="remove" />
 
     <application
         android:name="com.ledvance.ai.light.LdvApplication"
@@ -22,8 +26,10 @@
             android:name="com.ledvance.ai.light.MainActivity"
             android:configChanges="uiMode|screenLayout|screenSize|orientation"
             android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.App.Splash"
-            android:launchMode="singleTask">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

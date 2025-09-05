@@ -1,5 +1,6 @@
 package com.ledvance.tuya.apis.domain
 
+import com.thingclips.smart.sdk.bean.DeviceBean
 import org.json.JSONObject
 
 /**
@@ -11,4 +12,5 @@ import org.json.JSONObject
 interface ITuyaDeviceApi {
     suspend fun publishDps(devId: String, command: JSONObject?): Boolean
     suspend fun deleteDevice(devId: String, isReset: Boolean): Boolean
+    fun getDevice(devId: String): DeviceBean?
 }

@@ -29,6 +29,7 @@ import com.ledvance.ai.light.model.Mode
 import com.ledvance.ai.light.model.Scenes
 import com.ledvance.ai.light.model.WorkModeSegment
 import com.ledvance.ai.light.ui.FlowRowSection
+import com.ledvance.ai.light.ui.ModeView
 import com.ledvance.ai.light.ui.ScenesView
 import com.ledvance.ai.light.viewmodel.DevicePanelViewModel
 import com.ledvance.ui.component.IRadioGroupItem
@@ -84,6 +85,15 @@ fun DevicePanelScreen(
                 viewModel.switch(it)
             }
 
+            ModeView(
+                items = Mode.allMode,
+                title = "Mode",
+                modifier = Modifier.padding(top = 20.dp),
+                onItemClick = {
+
+                }
+            )
+
             ScenesView(
                 modifier = Modifier.padding(top = 20.dp),
                 items = Scenes.allScenes,
@@ -99,14 +109,7 @@ fun DevicePanelScreen(
             ) {
 
             }
-            FlowRowSection(
-                items = Mode.allMode,
-                title = "Mode",
-                modifier = Modifier.padding(top = 20.dp),
-                onItemClick = {
 
-                }
-            )
             FlowRowSection(
                 items = CustomActions.allActions,
                 title = "Custom Actions",
@@ -135,17 +138,17 @@ fun DevicePanelScreen(
                     )
             )
 
-            LedvanceButton(
-                text = "Delete",
-                modifier = Modifier.padding(top = 20.dp),
-                containerColor = AppTheme.colors.buttonGreyBackground
-            ) {
-                scope.launch {
-                    if (viewModel.delete()) {
-                        onBackPressed.invoke()
-                    }
-                }
-            }
+//            LedvanceButton(
+//                text = "Delete",
+//                modifier = Modifier.padding(top = 20.dp),
+//                containerColor = AppTheme.colors.buttonGreyBackground
+//            ) {
+//                scope.launch {
+//                    if (viewModel.delete()) {
+//                        onBackPressed.invoke()
+//                    }
+//                }
+//            }
             Spacer(modifier = Modifier.height(50.dp))
         }
     }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -89,8 +91,14 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (DeviceB
             onRefresh = { viewModel.onRefresh() },
         ) {
             when {
-                deviceList.isEmpty() -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                deviceList.isEmpty() && !uiState.loading -> {
+                    val state = rememberScrollState()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(state),
+                        contentAlignment = Alignment.Center
+                    ) {
                         LedvanceButton(
                             text = "Add device",
                             modifier = Modifier.padding(horizontal = 100.dp)

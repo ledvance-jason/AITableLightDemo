@@ -46,10 +46,6 @@ fun DeviceItem(
     val colorFilter = remember {
         ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0F) })
     }
-    Timber.tag("DeviceBean").i(
-        "DeviceItem: " +
-                "${device.is433SubDev()} ${device.is433Wifi()} ${device.isThreadSubDev} ${device.isInfraredSubDev}"
-    )
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.screenBackground),

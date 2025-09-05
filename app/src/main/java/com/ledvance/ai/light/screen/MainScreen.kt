@@ -43,7 +43,7 @@ fun MainScreen() {
             modifier = Modifier.weight(1f)
         ) { index ->
             when (index) {
-                0 -> HomeScreen()
+                0 -> HomeScreen(onItemClick = {})
                 1 -> MoreScreen()
             }
         }

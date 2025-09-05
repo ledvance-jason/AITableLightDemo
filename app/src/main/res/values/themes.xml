@@ -3,7 +3,7 @@
 
     <!-- Allows us to override night specific attributes in the
        values-night folder. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" />
 
     <!-- The final theme we use -->
     <style name="Theme.App" parent="AppTheme">
@@ -18,12 +18,12 @@
     <style name="Theme.App.Splash" parent="NightAdjusted.Theme.Splash">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         <item name="windowSplashScreenAnimationDuration">0</item>
-        <item name="postSplashScreenTheme">@style/Base_BizBundle_Theme</item>
+        <item name="postSplashScreenTheme">@style/Theme.App</item>
     </style>
 
     <!-- Tuya Biz 必选配置 -->
     <!-- Base application theme. -->
-    <style name="Base_BizBundle_Theme" parent="Theme.App">
+    <style name="Base_BizBundle_Theme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="status_font_color">@color/status_font_color</item>
         <item name="status_bg_color">@color/status_bg_color</item>
         <item name="navbar_font_color">@color/navbar_font_color</item>

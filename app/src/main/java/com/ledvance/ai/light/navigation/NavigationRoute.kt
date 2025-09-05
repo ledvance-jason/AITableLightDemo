@@ -17,7 +17,7 @@ data object MainRoute : NavigationRoute
 data object LoginRoute : NavigationRoute
 
 @Serializable
-data class DevicePanelRoute(val devId: String) : NavigationRoute
+data class DevicePanelRoute(val devId: String, val devName: String) : NavigationRoute
 
 @Serializable
 data object MoreRoute : NavigationRoute

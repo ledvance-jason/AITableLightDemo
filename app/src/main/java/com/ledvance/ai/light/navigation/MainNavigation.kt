@@ -56,7 +56,9 @@ fun MainNavigation(userViewModel: UserViewModel = hiltViewModel()) {
         },
         entryProvider = entryProvider {
             entry<MainRoute> {
-                HomeScreen()
+                HomeScreen(onItemClick = {
+                    backStack.add(DevicePanelRoute(devId = it.devId, devName = it.getName()))
+                })
             }
             entry<LoginRoute> {
                 LoginScreen(onLoginSuccess = {
@@ -65,7 +67,7 @@ fun MainNavigation(userViewModel: UserViewModel = hiltViewModel()) {
                 })
             }
             entry<DevicePanelRoute> {
-                DevicePanelScreen(devId = it.devId, onBackPressed = {
+                DevicePanelScreen(devId = it.devId, devName = it.devName, onBackPressed = {
                     backStack.removeLastOrNull()
                 })
             }

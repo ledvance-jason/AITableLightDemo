@@ -44,6 +44,7 @@ class ColorScheme(
 
     val screenSecondaryBackground: Color,
     val offline: Color,
+    val border: Color,
 )
 
 fun lightColorScheme(
@@ -76,6 +77,7 @@ fun lightColorScheme(
     textFieldSecondaryBorder: Color = GreyC4C4C4,
     textFieldBackground: Color = Color.Transparent,
     offline: Color = Grey666666,
+    border: Color = GrayEEEEEF,
 ): ColorScheme {
     return ColorScheme(
         primary = primary,
@@ -105,6 +107,7 @@ fun lightColorScheme(
         screenSecondaryBackground = screenSecondaryBackground,
         textFieldBackground = textFieldBackground,
         offline = offline,
+        border = border,
     )
 }
 
@@ -138,6 +141,7 @@ fun darkColorScheme(
     textFieldSecondaryBorder: Color = Grey666666,
     textFieldBackground: Color = Black30343C,
     offline: Color = Grey666666,
+    border: Color = GrayEEEEEF,
 ): ColorScheme {
     return ColorScheme(
         primary = primary,
@@ -167,5 +171,6 @@ fun darkColorScheme(
         screenSecondaryBackground = screenSecondaryBackground,
         textFieldBackground = textFieldBackground,
         offline = offline,
+        border = border,
     )
 }

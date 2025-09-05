@@ -1,6 +1,5 @@
 package com.ledvance.ui.component
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -10,6 +9,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ledvance.ui.theme.AppTheme
@@ -21,7 +21,13 @@ import com.ledvance.ui.theme.AppTheme
  * Describe : LedvanceButton
  */
 @Composable
-fun LedvanceButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun LedvanceButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    containerColor: Color = AppTheme.colors.buttonBackground,
+    contentColor: Color = AppTheme.colors.buttonContent,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .then(modifier)
@@ -32,8 +38,8 @@ fun LedvanceButton(text: String, modifier: Modifier = Modifier, onClick: () -> U
             onClick = onClick,
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = AppTheme.colors.buttonBackground,
-                contentColor = AppTheme.colors.buttonContent,
+                containerColor = containerColor,
+                contentColor = contentColor,
             )
         ) {
             Text(text = text, maxLines = 1, overflow = TextOverflow.Ellipsis)

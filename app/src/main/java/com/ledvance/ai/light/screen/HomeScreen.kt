@@ -1,25 +1,35 @@
 package com.ledvance.ai.light.screen
 
 import android.Manifest
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -48,7 +58,11 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (DeviceBean) -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onGotoTestMode: () -> Unit,
+    onItemClick: (DeviceBean) -> Unit
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
@@ -137,6 +151,39 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (DeviceB
                             })
                     }
                 }
+            }
+        }
+        Column(
+            modifier = Modifier
+                .align(alignment = Alignment.BottomEnd)
+                .padding(30.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            var extended by remember { mutableStateOf(false) }
+            AnimatedVisibility(visible = extended) {
+                SmallFloatingActionButton(
+                    onClick = onGotoTestMode,
+                    shape = CircleShape,
+                    contentColor = Color.Black,
+                    containerColor = Color.White,
+                    modifier = Modifier
+                        .padding(bottom = 20.dp)
+                        .size(48.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_test_mode),
+                        contentDescription = "More"
+                    )
+                }
+            }
+            SmallFloatingActionButton(
+                onClick = { extended = !extended },
+                shape = CircleShape,
+                contentColor = Color.Black,
+                containerColor = Color.White,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More")
             }
         }
     }

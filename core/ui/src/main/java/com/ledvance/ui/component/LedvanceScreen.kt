@@ -4,8 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -62,7 +62,8 @@ fun LedvanceScreen(
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
     backgroundColor: Color = Color.Unspecified,
-    content: @Composable ColumnScope.() -> Unit
+    contentAlignment: Alignment = Alignment.TopStart,
+    content: @Composable BoxScope.() -> Unit
 ) {
     val color = backgroundColor.takeIf { !it.isUnspecified } ?: LocalBackgroundTheme.current.color
     val tonalElevation = LocalBackgroundTheme.current.tonalElevation
@@ -104,8 +105,7 @@ fun LedvanceScreen(
                             WindowInsets.safeDrawing.only(
                                 WindowInsetsSides.Horizontal,
                             ),
-                        )
-                        .then(modifier),
+                        ),
                 ) {
                     if (backTitle != null || (actionIconPainter != null && !enableTitleActionIcon)) {
                         LedvanceTopLayout(
@@ -142,7 +142,13 @@ fun LedvanceScreen(
 
                         }
                     }
-                    this.content()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .then(modifier),
+                        contentAlignment = contentAlignment,
+                        content = content
+                    )
                 }
             }
         }

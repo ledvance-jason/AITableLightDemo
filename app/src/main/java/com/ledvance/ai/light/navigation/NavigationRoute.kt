@@ -21,3 +21,6 @@ data class DevicePanelRoute(val devId: String, val devName: String) : Navigation
 
 @Serializable
 data object MoreRoute : NavigationRoute
+
+@Serializable
+data object TestModeRoute : NavigationRoute

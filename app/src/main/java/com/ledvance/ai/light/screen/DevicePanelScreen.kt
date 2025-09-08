@@ -195,7 +195,7 @@ private fun LightingControl(
                 selectorItem = selectedWorkMode,
                 items = allWorkMode,
                 modifier = Modifier.padding(top = 20.dp, bottom = 15.dp),
-                shape = RoundedCornerShape(7.dp),
+                shape = RoundedCornerShape(8.dp),
                 checkedColor = Color.White,
                 backgroundColor = AppTheme.colors.border,
                 checkedTextColor = AppTheme.colors.title,

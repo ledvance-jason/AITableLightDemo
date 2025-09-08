@@ -1,6 +1,7 @@
 package com.ledvance.ui.extensions
 
 import androidx.compose.foundation.Indication
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -48,7 +49,7 @@ class NoRippleInteractionSource : MutableInteractionSource {
 inline fun Modifier.debouncedClickable(
     debouncedInterval: Long = 800L,
     interactionSource: MutableInteractionSource? = null,
-    indication: Indication? = null,
+    indication: Indication? = LocalIndication.current,
     crossinline onClick: () -> Unit
 ): Modifier {
     var lastClickTime by remember { mutableLongStateOf(0L) }

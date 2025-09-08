@@ -1,5 +1,7 @@
 package com.ledvance.ai.light.screen
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -38,21 +40,23 @@ fun MainScreen() {
     }
     val pagerState = rememberPagerState { mainTabList.size }
     LedvanceScreen {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.weight(1f)
-        ) { index ->
-            when (index) {
-                0 -> HomeScreen(onItemClick = {})
-                1 -> MoreScreen()
+        Column(modifier = Modifier.fillMaxSize()) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.weight(1f)
+            ) { index ->
+                when (index) {
+                    0 -> HomeScreen(onItemClick = {}, onGotoTestMode = {})
+                    1 -> MoreScreen()
+                }
             }
+            LedvanceBottomNavigation(
+                selectedIndex = pagerState.currentPage,
+                items = mainTabList,
+                onClick = { index, _ ->
+                    scope.launch { pagerState.animateScrollToPage(index) }
+                }
+            )
         }
-        LedvanceBottomNavigation(
-            selectedIndex = pagerState.currentPage,
-            items = mainTabList,
-            onClick = { index, _ ->
-                scope.launch { pagerState.animateScrollToPage(index) }
-            }
-        )
     }
 }

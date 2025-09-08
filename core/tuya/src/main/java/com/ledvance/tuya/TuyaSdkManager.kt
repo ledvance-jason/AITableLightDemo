@@ -35,7 +35,7 @@ object TuyaSdkManager {
     internal fun init(application: Application) {
         disableSecurityPrompt(application)
         PackConfig.addValueDelegate(AppConfig::class.java)
-        L.setLogInterception(if (application.isDebuggable()) Log.DEBUG else Log.INFO) { level, tag, msg ->
+        L.setLogInterception(Log.DEBUG) { level, tag, msg ->
             Timber.tag(THING_TAG).log(priority = level, "$tag $msg")
         }
         ThingHomeSdk.init(application)

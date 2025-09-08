@@ -36,7 +36,7 @@ fun WhiteModePicker(
         modifier = Modifier
             .then(modifier)
             .fillMaxWidth()
-            .then(if (isSupportCCT) Modifier.height(200.dp) else Modifier)
+            .then(if (isSupportCCT) Modifier.height(240.dp) else Modifier)
             .clipWithBorder(borderShape, AppTheme.colors.border, 2.dp),
         isSupportCCT = isSupportCCT,
         onBrightnessChanged = {

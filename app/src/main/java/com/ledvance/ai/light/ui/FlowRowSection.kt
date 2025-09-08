@@ -2,6 +2,7 @@ package com.ledvance.ai.light.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ledvance.ui.extensions.debouncedClickable
@@ -65,6 +67,7 @@ fun FlowRowSection(
                             shape = RoundedCornerShape(10.dp),
                             color = AppTheme.colors.border
                         )
+                        .clip(RoundedCornerShape(10.dp))
                         .debouncedClickable(onClick = { onItemClick.invoke(it) }),
                     contentAlignment = Alignment.Center
                 ) {

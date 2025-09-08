@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -60,10 +61,8 @@ fun ScenesView(
                 ScenesItem(
                     scenes = it,
                     modifier = Modifier
-                        .weight(1f)
-                        .debouncedClickable(onClick = {
-                            onItemClick.invoke(it)
-                        })
+                        .weight(1f),
+                    onItemClick = onItemClick
                 )
             }
             val count = (items.size % maxItemsInEachRow)
@@ -77,7 +76,11 @@ fun ScenesView(
 }
 
 @Composable
-private fun ScenesItem(scenes: ISceneItem, modifier: Modifier = Modifier) {
+private fun ScenesItem(
+    scenes: ISceneItem,
+    modifier: Modifier = Modifier,
+    onItemClick: (ISceneItem) -> Unit
+) {
     Row(
         modifier = Modifier
             .height(48.dp)
@@ -90,7 +93,11 @@ private fun ScenesItem(scenes: ISceneItem, modifier: Modifier = Modifier) {
                 width = 1.dp,
                 color = AppTheme.colors.border,
                 shape = RoundedCornerShape(10.dp)
-            ),
+            )
+            .clip(RoundedCornerShape(10.dp))
+            .debouncedClickable(onClick = {
+                onItemClick.invoke(scenes)
+            }),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(

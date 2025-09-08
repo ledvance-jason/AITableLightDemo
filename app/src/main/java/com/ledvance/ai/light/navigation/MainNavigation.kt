@@ -16,6 +16,7 @@ import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.ledvance.ai.light.screen.DevicePanelScreen
 import com.ledvance.ai.light.screen.HomeScreen
 import com.ledvance.ai.light.screen.LoginScreen
+import com.ledvance.ai.light.screen.TestModeScreen
 import com.ledvance.ai.light.viewmodel.UserViewModel
 import timber.log.Timber
 
@@ -56,7 +57,9 @@ fun MainNavigation(userViewModel: UserViewModel = hiltViewModel()) {
         },
         entryProvider = entryProvider {
             entry<MainRoute> {
-                HomeScreen(onItemClick = {
+                HomeScreen(onGotoTestMode = {
+                    backStack.add(TestModeRoute)
+                }, onItemClick = {
                     backStack.add(DevicePanelRoute(devId = it.devId, devName = it.getName()))
                 })
             }
@@ -68,6 +71,11 @@ fun MainNavigation(userViewModel: UserViewModel = hiltViewModel()) {
             }
             entry<DevicePanelRoute> {
                 DevicePanelScreen(devId = it.devId, devName = it.devName, onBackPressed = {
+                    backStack.removeLastOrNull()
+                })
+            }
+            entry<TestModeRoute> {
+                TestModeScreen(onBackPressed = {
                     backStack.removeLastOrNull()
                 })
             }

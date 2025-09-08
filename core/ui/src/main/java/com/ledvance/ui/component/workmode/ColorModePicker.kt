@@ -33,7 +33,7 @@ fun ColorModePicker(
         modifier = Modifier
             .then(modifier)
             .fillMaxWidth()
-            .height(200.dp)
+            .height(240.dp)
             .clipWithBorder(borderShape, AppTheme.colors.border, 2.dp),
         initialHsv = Hsv(hue = hue.toFloat(), saturation = sat / 100f, brightness = brightness),
         onColorChanged = {

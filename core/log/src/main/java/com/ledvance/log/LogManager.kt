@@ -5,10 +5,11 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
 import com.ledvance.log.crash.registerAppCrashLog
-import com.ledvance.utils.extensions.deleteDirFiles
-import com.ledvance.utils.extensions.zip
 import com.ledvance.log.logcat.LogcatManager
+import com.ledvance.utils.extensions.deleteDirFiles
+import com.ledvance.utils.extensions.share
 import com.ledvance.utils.extensions.shareByEmail
+import com.ledvance.utils.extensions.zip
 import com.tencent.mars.xlog.Log
 import com.tencent.mars.xlog.Xlog
 import kotlinx.coroutines.Dispatchers
@@ -204,13 +205,29 @@ object LogManager {
         }
     }
 
-    suspend fun shareAppLog(context: Context, title: String, email: String) {
+    sealed interface ShareAppLogType {
+        data class Email(val email: String, val title: String) : ShareAppLogType
+        data object Other : ShareAppLogType
+
+    }
+
+    suspend fun shareAppLog(context: Context, type: ShareAppLogType = ShareAppLogType.Other) {
         val file = getLogZipFile(context) ?: return
-        file.shareByEmail(
-            context = context,
-            title = title,
-            email = email
-        )
+        when (type) {
+            is ShareAppLogType.Email -> {
+                file.shareByEmail(
+                    context = context,
+                    title = type.title,
+                    email = type.email
+                )
+
+            }
+
+            ShareAppLogType.Other -> {
+                file.share(context)
+            }
+        }
+
     }
 
     private fun checkLogMaxSize() {

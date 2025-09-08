@@ -46,3 +46,19 @@
 #MINI SDK
 -keep class com.gzl.smart.** { *; }
 -dontwarn com.gzl.smart.**
+
+#xlog
+-keep class com.tencent.mars.**{
+    public protected private *;
+}
+
+-dontwarn com.aliyun.odps.io.Writable
+-dontwarn com.aliyun.odps.udf.UDF
+-dontwarn java.awt.Color
+-dontwarn java.awt.Font
+-dontwarn java.awt.Point
+-dontwarn org.redisson.client.codec.BaseCodec
+-dontwarn org.redisson.client.protocol.Decoder
+-dontwarn org.redisson.client.protocol.Encoder
+-dontwarn retrofit2.Converter$Factory
+-dontwarn retrofit2.Converter

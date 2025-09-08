@@ -17,6 +17,10 @@ android {
         versionCode = providers.gradleProperty("versionCode").orNull?.toIntOrNull() ?: 0
         versionName = providers.gradleProperty("versionName").orNull ?: ""
         setProperty("archivesBaseName", "LdvAITableLight-$versionName[$versionCode]_${getDate()}")
+        androidResources {
+            val language = listOf("en")
+            localeFilters.addAll(language)
+        }
     }
 
     packaging {
@@ -33,8 +37,7 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.utils)
     implementation(projects.core.tuya)
-    debugImplementation(projects.core.log)
-    releaseImplementation(projects.core.logNoOp)
+    implementation(projects.core.log)
 
     implementation(libs.appcompat)
     implementation(libs.core.ktx)

@@ -1,13 +1,16 @@
 package com.ledvance.ai.light.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledvance.tuya.beans.TuyaHomeChangeState
 import com.ledvance.tuya.command.DeviceCommandBuilder
-import com.ledvance.tuya.command.dps.AITabLightDps
 import com.ledvance.tuya.data.repo.ITuyaRepo
+import com.thingclips.smart.sdk.bean.DeviceBean
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -25,9 +28,11 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val context: Application,
     private val tuyaRepo: ITuyaRepo,
 ) : ViewModel() {
     private val TAG = "HomeViewModel"
+    private var longLinkJob: Job? = null
     val uiStateFlow = MutableStateFlow(HomeUIState())
 
     val deviceListFlow = tuyaRepo.getHomeApi().getDeviceListFlow().map {
@@ -54,13 +59,20 @@ class HomeViewModel @Inject constructor(
         }
         homeDetail?.run {
             tuyaRepo.getHomeApi().shiftCurrentHome(homeId, name)
+            tuyaRepo.getMatterApi().initFabric(context, homeId)
+            tuyaRepo.getMatterApi().initDevicesFabricNodes(homeId)
             collectHomeStatusFlow()
         }
         uiStateFlow.update { it.copy(loading = false) }
     }
 
-    fun collectHomeStatusFlow() {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun collectHomeStatusFlow() {
+        longLinkJob?.run {
+            cancel()
+            // 避免长连接的回调取消过快 延迟一下
+            delay(1000)
+        }
+        longLinkJob = viewModelScope.launch(Dispatchers.IO) {
             val currentHomeId = tuyaRepo.getHomeApi().getCurrentHomeId()
             Timber.tag(TAG).i("collectHomeStatusFlow: currentFamilyId->$currentHomeId")
             if (currentHomeId == 0L) {
@@ -70,10 +82,14 @@ class HomeViewModel @Inject constructor(
                 when (state) {
                     is TuyaHomeChangeState.DeviceAdded -> {
                         tuyaRepo.getHomeApi().updateCurrentHomeDevices()
+                        viewModelScope.launch(Dispatchers.IO) { collectHomeStatusFlow() }
                     }
 
                     is TuyaHomeChangeState.DeviceDpUpdate -> {}
-                    is TuyaHomeChangeState.DeviceInfoUpdate -> {}
+                    is TuyaHomeChangeState.DeviceInfoUpdate -> {
+                        tuyaRepo.getHomeApi().updateCurrentHomeDevices()
+                    }
+
                     is TuyaHomeChangeState.DeviceNetworkStatus -> {}
                     is TuyaHomeChangeState.DeviceOnline -> {}
                     is TuyaHomeChangeState.DeviceRemoved -> {
@@ -97,18 +113,24 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun switch(devId: String, switch: Boolean) {
-        viewModelScope.launch {
-            uiStateFlow.update { it.copy(loading = true) }
-            tuyaRepo.getDeviceApi().publishDps(
-                devId = devId,
-                command = DeviceCommandBuilder().add(
-                    dp = AITabLightDps.SwitchDp,
-                    value = switch
-                ).buildJson()
-            )
-            uiStateFlow.update { it.copy(loading = false) }
+    suspend fun switch(device: DeviceBean, switch: Boolean): Result<Boolean> {
+        uiStateFlow.update { it.copy(loading = true) }
+        val result = tuyaRepo.getDeviceApi().publishDps(
+            devId = device.devId,
+            command = DeviceCommandBuilder(device)
+                .addSwitch(switch)
+                .buildJson()
+        )
+        if (result.isSuccess) {
+            tuyaRepo.getLongLinkApi().updateHomeDeviceState(device.devId, switch = switch)
         }
+        uiStateFlow.update { it.copy(loading = false) }
+        return result
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        longLinkJob?.cancel()
     }
 }
 

@@ -39,6 +39,7 @@ import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LedvanceSlider
 import com.ledvance.ui.component.LedvanceSwitch
 import com.ledvance.ui.component.LoadingCard
+import com.ledvance.ui.component.rememberSnackBarState
 import com.ledvance.ui.component.workmode.ColorModePicker
 import com.ledvance.ui.component.workmode.WhiteModePicker
 import com.ledvance.ui.extensions.clipWithBorder
@@ -62,6 +63,7 @@ fun DevicePanelScreen(
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val snackBarState = rememberSnackBarState()
     val state = rememberScrollState()
     val deviceStateMap by viewModel.deviceStateMapFlow.collectAsStateWithLifecycle()
     if (uiState.loading) {
@@ -82,7 +84,13 @@ fun DevicePanelScreen(
             LightingControl(
                 switch = deviceStateMap[devId]?.switch ?: false,
             ) {
-                viewModel.switch(it)
+                scope.launch {
+                    val result = viewModel.switch(it)
+                    val errorMsg = result.exceptionOrNull()?.message
+                    if (!errorMsg.isNullOrEmpty()) {
+                        snackBarState.showSnackbar(errorMsg)
+                    }
+                }
             }
 
             ModeView(
@@ -138,17 +146,17 @@ fun DevicePanelScreen(
                     )
             )
 
-//            LedvanceButton(
-//                text = "Delete",
-//                modifier = Modifier.padding(top = 20.dp),
-//                containerColor = AppTheme.colors.buttonGreyBackground
-//            ) {
-//                scope.launch {
-//                    if (viewModel.delete()) {
-//                        onBackPressed.invoke()
-//                    }
-//                }
-//            }
+            LedvanceButton(
+                text = "Delete",
+                modifier = Modifier.padding(top = 20.dp),
+                containerColor = AppTheme.colors.buttonGreyBackground
+            ) {
+                scope.launch {
+                    if (viewModel.delete()) {
+                        onBackPressed.invoke()
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(50.dp))
         }
     }
@@ -160,7 +168,6 @@ private fun LightingControl(
     modifier: Modifier = Modifier,
     onSwitchChange: (Boolean) -> Unit
 ) {
-    var switch by remember(switch) { mutableStateOf(switch) }
     val allWorkMode = remember { WorkModeSegment.allWorkModeSegment }
     var selectedWorkMode by remember {
         mutableStateOf<IRadioGroupItem>(allWorkMode.first())
@@ -184,7 +191,6 @@ private fun LightingControl(
             LedvanceSwitch(
                 checked = switch,
                 onCheckedChange = {
-                    switch = it
                     onSwitchChange.invoke(it)
                 }
             )

@@ -34,7 +34,7 @@ internal class TuyaDeviceApi @Inject constructor() : ITuyaDeviceApi {
         val isTuyaLinkDevice = deviceBean.isTuyaLinkDevice()
         Timber.tag(TAG).i("fetchThingMode: isTuyaLinkDevice:$isTuyaLinkDevice")
         if (!isTuyaLinkDevice) {
-            return@withContext false
+            return@withContext true
         }
         if (deviceBean.thingModel != null) {
             return@withContext true
@@ -58,33 +58,50 @@ internal class TuyaDeviceApi @Inject constructor() : ITuyaDeviceApi {
         }
     }
 
-    override suspend fun publishDps(devId: String, command: JSONObject?): Boolean =
+    override suspend fun publishDps(devId: String, command: JSONObject?): Result<Boolean> =
         withContext(Dispatchers.IO) {
             if (!checkThingMode(devId)) {
-                return@withContext false
+                return@withContext Result.failure(Throwable("thing mode fetch failed!"))
             }
             Timber.tag(TAG).i("publishDps($devId): $command")
-            command ?: return@withContext false
+            command ?: return@withContext Result.failure(Throwable("command is null!"))
+            val device = ThingHomeSdk.getDataInstance().getDeviceBean(devId)
+                ?: return@withContext Result.failure(Throwable("device fetch failed!"))
             return@withContext suspendCancellableCoroutine {
-                ThingHomeSdk.newDeviceInstance(devId).publishThingMessageWithType(
-                    ThingSmartThingMessageType.PROPERTY,
-                    command,
-                    object : IResultCallback {
-                        override fun onError(code: String?, error: String?) {
-                            Timber.tag(TAG).e("publishDps onError: code:$code, msg:$error")
-                            it.takeIf { it.isActive }?.resume(false)
-                        }
+                val callback = object : IResultCallback {
+                    override fun onError(code: String?, error: String?) {
+                        Timber.tag(TAG).e("publishDps onError: code:$code, msg:$error")
+                        val exception = Throwable(error ?: "publishDps failed!")
+                        it.takeIf { it.isActive }?.resume(Result.failure(exception))
+                    }
 
-                        override fun onSuccess() {
-                            Timber.tag(TAG).i("publishDps onSuccess")
-                            it.takeIf { it.isActive }?.resume(true)
-                        }
-                    })
+                    override fun onSuccess() {
+                        Timber.tag(TAG).i("publishDps $command onSuccess")
+                        it.takeIf { it.isActive }?.resume(Result.success(true))
+                    }
+                }
+                when {
+                    device.isTuyaLinkDevice() -> {
+                        ThingHomeSdk.newDeviceInstance(devId).publishThingMessageWithType(
+                            ThingSmartThingMessageType.PROPERTY,
+                            command,
+                            callback
+                        )
+                    }
+
+                    else -> {
+                        ThingHomeSdk.newDeviceInstance(devId).publishDps(
+                            command.toString(),
+                            callback
+                        )
+                    }
+                }
             }
         }
 
     override suspend fun deleteDevice(devId: String, isReset: Boolean) =
         suspendCancellableCoroutine {
+            Timber.tag(TAG).i("deleteDevice: devId->$devId")
             val thingDevice = ThingHomeSdk.newDeviceInstance(devId)
             val callback = object : IResultCallback {
                 override fun onError(code: String?, error: String?) {

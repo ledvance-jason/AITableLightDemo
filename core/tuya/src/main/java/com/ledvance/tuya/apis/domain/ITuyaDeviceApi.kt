@@ -10,7 +10,7 @@ import org.json.JSONObject
  * Describe : ITuyaDeviceApi
  */
 interface ITuyaDeviceApi {
-    suspend fun publishDps(devId: String, command: JSONObject?): Boolean
+    suspend fun publishDps(devId: String, command: JSONObject?): Result<Boolean>
     suspend fun deleteDevice(devId: String, isReset: Boolean): Boolean
     fun getDevice(devId: String): DeviceBean?
 }

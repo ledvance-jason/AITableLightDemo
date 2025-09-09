@@ -5,6 +5,8 @@ import com.ledvance.tuya.apis.domain.ITuyaActivatorApi
 import com.ledvance.tuya.apis.domain.ITuyaDeviceApi
 import com.ledvance.tuya.apis.domain.ITuyaHomeApi
 import com.ledvance.tuya.apis.domain.ITuyaLongLinkApi
+import com.ledvance.tuya.apis.domain.ITuyaMatterApi
+import com.ledvance.tuya.apis.domain.ITuyaScanDeviceApi
 
 /**
  * @author : jason yin
@@ -18,4 +20,6 @@ interface ITuyaRepo {
     fun getDeviceApi(): ITuyaDeviceApi
     fun getHomeApi(): ITuyaHomeApi
     fun getLongLinkApi(): ITuyaLongLinkApi
+    fun getMatterApi(): ITuyaMatterApi
+    fun getScanDeviceApi(): ITuyaScanDeviceApi
 }

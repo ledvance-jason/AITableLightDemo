@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.Flow
  * Describe : ITuyaAccountApi
  */
 interface ITuyaAccountApi {
-    suspend fun loginWithUid(countryCode: String, uid: String, password: String): User?
-    suspend fun loginWithEmail(countryCode: String, email: String, password: String): User?
-    suspend fun logout(): Boolean
+    suspend fun loginWithUid(countryCode: String, uid: String, password: String): Result<User?>
+    suspend fun loginWithEmail(countryCode: String, email: String, password: String): Result<User?>
+    suspend fun logout(): Result<Boolean>
     fun isLogin(): Boolean
     fun getUserFlow(): Flow<User?>
 }

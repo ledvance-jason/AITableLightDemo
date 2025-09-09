@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.ledvance.ai.light.model.DarkThemeMode
-import com.ledvance.ai.light.navigation.MainNavigation
+import com.ledvance.ai.light.state.LedvanceApp
 import com.ledvance.ai.light.utils.DataStoreKeys
 import com.ledvance.tuya.TuyaSdkManager
 import com.ledvance.ui.theme.LedvanceTheme
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
         })
         setContent {
             LedvanceTheme(darkTheme = darkTheme) {
-                MainNavigation()
+                LedvanceApp()
             }
         }
     }

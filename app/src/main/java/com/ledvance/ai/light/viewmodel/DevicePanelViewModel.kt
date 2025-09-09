@@ -3,8 +3,8 @@ package com.ledvance.ai.light.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledvance.tuya.command.DeviceCommandBuilder
-import com.ledvance.tuya.command.dps.AITabLightDps
 import com.ledvance.tuya.data.repo.ITuyaRepo
+import com.thingclips.smart.home.sdk.ThingHomeSdk
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 /**
  * @author : jason yin
@@ -43,18 +42,21 @@ class DevicePanelViewModel @AssistedInject constructor(
         return result
     }
 
-    fun switch(switch: Boolean) {
-        viewModelScope.launch {
-            _uiStateFlow.update { it.copy(loading = true) }
-            tuyaRepo.getDeviceApi().publishDps(
-                devId = devId,
-                command = DeviceCommandBuilder().add(
-                    dp = AITabLightDps.SwitchDp,
-                    value = switch
-                ).buildJson()
-            )
-            _uiStateFlow.update { it.copy(loading = false) }
+    suspend fun switch(switch: Boolean): Result<Boolean> {
+        val device = ThingHomeSdk.getDataInstance().getDeviceBean(devId)
+            ?: return Result.failure(Throwable("device is null!"))
+        _uiStateFlow.update { it.copy(loading = true) }
+        val result = tuyaRepo.getDeviceApi().publishDps(
+            devId = devId,
+            command = DeviceCommandBuilder(device)
+                .addSwitch(switch)
+                .buildJson()
+        )
+        if (result.isSuccess) {
+            tuyaRepo.getLongLinkApi().updateHomeDeviceState(device.devId, switch = switch)
         }
+        _uiStateFlow.update { it.copy(loading = false) }
+        return result
     }
 
     data class DevicePanelUIState(

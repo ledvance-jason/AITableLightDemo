@@ -39,54 +39,57 @@ internal class TuyaAccountApi @Inject constructor(
 
     override suspend fun loginWithUid(countryCode: String, uid: String, password: String) =
         suspendCancellableCoroutine {
+            Timber.tag(TAG).i("loginWithUid: uid->$uid")
             ThingHomeSdk.getUserInstance()
                 .loginOrRegisterWithUid(countryCode, uid, password, true, object :
                     IUidLoginCallback {
                     override fun onSuccess(user: User?, homeId: Long) {
                         Timber.tag(TAG)
                             .i("loginWithUid onSuccess ${JSON.toJSON(user)},homeId:$homeId")
-                        it.takeIf { it.isActive }?.resume(user)
+                        it.takeIf { it.isActive }?.resume(Result.success(user))
                         userFlow.update { user }
                         TuyaSdkManager.onLogin()
                     }
 
                     override fun onError(code: String?, error: String?) {
                         Timber.tag(TAG).e("loginWithUid onError code:$code,error:$error")
-                        it.takeIf { it.isActive }?.resume(null)
+                        it.takeIf { it.isActive }?.resume(Result.failure(Throwable(error)))
                     }
                 })
         }
 
     override suspend fun loginWithEmail(countryCode: String, email: String, password: String) =
         suspendCancellableCoroutine {
+            Timber.tag(TAG).i("loginWithEmail: email->$email")
             ThingHomeSdk.getUserInstance().loginWithEmail(countryCode, email, password, object :
                 ILoginCallback {
                 override fun onSuccess(user: User?) {
                     Timber.tag(TAG).i("loginWithEmail onSuccess ${JSON.toJSON(user)}")
-                    it.takeIf { it.isActive }?.resume(user)
+                    it.takeIf { it.isActive }?.resume(Result.success(user))
                     userFlow.update { user }
                     TuyaSdkManager.onLogin()
                 }
 
                 override fun onError(code: String?, error: String?) {
                     Timber.tag(TAG).e("loginWithEmail onError code:$code,error:$error")
-                    it.takeIf { it.isActive }?.resume(null)
+                    it.takeIf { it.isActive }?.resume(Result.failure(Throwable(error)))
                 }
             })
         }
 
     override suspend fun logout() = suspendCancellableCoroutine {
+        Timber.tag(TAG).i("logout: call")
         ThingHomeSdk.getUserInstance().logout(object : ILogoutCallback {
             override fun onSuccess() {
                 Timber.tag(TAG).i("logout onSuccess")
-                it.takeIf { it.isActive }?.resume(true)
+                it.takeIf { it.isActive }?.resume(Result.success(true))
                 userFlow.update { null }
                 TuyaSdkManager.onLogout(application)
             }
 
             override fun onError(code: String?, error: String?) {
                 Timber.tag(TAG).e("logout onError code:$code,error:$error")
-                it.takeIf { it.isActive }?.resume(false)
+                it.takeIf { it.isActive }?.resume(Result.failure(Throwable(error)))
             }
         })
     }

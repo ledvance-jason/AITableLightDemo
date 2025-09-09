@@ -1,7 +1,10 @@
 package com.ledvance.tuya.command
 
 import com.ledvance.tuya.command.dps.DeviceDp
+import com.ledvance.tuya.ktx.getDeviceSwitchDp
+import com.ledvance.tuya.ktx.isTuyaLinkDevice
 import com.ledvance.utils.extensions.tryCatchReturn
+import com.thingclips.smart.sdk.bean.DeviceBean
 import org.json.JSONObject
 
 /**
@@ -10,17 +13,24 @@ import org.json.JSONObject
  * Created date 2025/9/4 14:13
  * Describe : DeviceCommandBuilder
  */
-class DeviceCommandBuilder(private val useCode: Boolean = true) {
+class DeviceCommandBuilder(private val device: DeviceBean) {
     private val commands = mutableListOf<DeviceCommand>()
+    private val useCode = device.isTuyaLinkDevice()
 
-    fun add(dp: DeviceDp, value: Any): DeviceCommandBuilder {
+    fun addDp(dp: DeviceDp, value: Any): DeviceCommandBuilder {
         commands += dp.command(value, useCode)
+        return this
+    }
+
+    fun addSwitch(value: Boolean): DeviceCommandBuilder {
+        val deviceSwitchDp = device.getDeviceSwitchDp()
+        commands += deviceSwitchDp.command(value, useCode)
         return this
     }
 
     fun buildJson(): JSONObject? {
         return tryCatchReturn {
-            val json = org.json.JSONObject()
+            val json = JSONObject()
             commands.forEach { cmd ->
                 json.put(cmd.key, cmd.value)
             }

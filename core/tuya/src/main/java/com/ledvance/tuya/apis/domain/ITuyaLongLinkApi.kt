@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.Flow
  * Describe : ITuyaLongLinkApi
  */
 interface ITuyaLongLinkApi {
-    fun getHomeStatusFlow(homeId: Long): Flow<TuyaHomeChangeState>
+    suspend fun getHomeStatusFlow(homeId: Long): Flow<TuyaHomeChangeState>
 
     fun getHomeDeviceStateFlow(): Flow<Map<String, DeviceState>>
+
+    fun updateHomeDeviceState(devId: String, switch: Boolean? = null, online: Boolean? = null)
 }

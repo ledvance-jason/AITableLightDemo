@@ -60,6 +60,7 @@ internal class TuyaHomeApi @Inject constructor() : ITuyaHomeApi {
     }
 
     override suspend fun getHomeList() = suspendCancellableCoroutine {
+        Timber.tag(TAG).i("getHomeList: call")
         ThingHomeSdk.getHomeManagerInstance().queryHomeList(object : IThingGetHomeListCallback {
             override fun onSuccess(homeBeans: List<HomeBean?>?) {
                 Timber.tag(TAG).i("getHomeList onSuccess ${homeBeans.toJson()}")
@@ -94,6 +95,7 @@ internal class TuyaHomeApi @Inject constructor() : ITuyaHomeApi {
                 getHomeDetailCache(homeId)
             } else null
             return@withContext homeDetail ?: getHomeDetailRemote(homeId)
+            ?: getHomeDetailCache(homeId)
         }
 
     private suspend fun getHomeDetailRemote(homeId: Long) = suspendCancellableCoroutine {
@@ -127,7 +129,7 @@ internal class TuyaHomeApi @Inject constructor() : ITuyaHomeApi {
     private fun getHomeDeviceList(homeId: Long): List<DeviceBean> {
         val deviceList = ThingHomeSdk.getDataInstance().getHomeDeviceList(homeId) ?: listOf()
         Timber.tag(TAG).i("getHomeDeviceList deviceList ${deviceList.size}")
-        return deviceList
+        return deviceList.sortedBy { it.displayOrder }
     }
 
 }

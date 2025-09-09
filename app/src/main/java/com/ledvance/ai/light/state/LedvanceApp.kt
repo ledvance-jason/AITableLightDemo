@@ -1,7 +1,11 @@
 package com.ledvance.ai.light.state
 
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.ledvance.ai.light.navigation.MainNavigation
+import com.ledvance.ui.component.LedvanceScreen
+import com.ledvance.ui.theme.LocalSnackBarHostState
 
 /**
  * @author : jason yin
@@ -23,4 +27,7 @@ fun LedvanceApp() {
 //            NavigationRoute.More to NavBarItem(icon = Icons.Default.Favorite, description = "More")
 //        )
 //    }
+    LedvanceScreen(snackbarHost = { SnackbarHost(LocalSnackBarHostState.current) }) {
+        MainNavigation()
+    }
 }

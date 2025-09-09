@@ -1,6 +1,7 @@
 package com.ledvance.ai.light.screen
 
 import android.Manifest
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,8 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.ledvance.ai.light.ui.DeviceItem
 import com.ledvance.ai.light.viewmodel.HomeViewModel
 import com.ledvance.tuya.TuyaSdkManager
@@ -47,6 +47,7 @@ import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LoadingCard
 import com.ledvance.ui.component.PullRefresh
+import com.ledvance.ui.component.rememberSnackBarState
 import com.thingclips.smart.sdk.bean.DeviceBean
 import kotlinx.coroutines.launch
 
@@ -65,20 +66,38 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val snackBarState = rememberSnackBarState()
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val deviceList by viewModel.deviceListFlow.collectAsStateWithLifecycle()
     val deviceStateMap by viewModel.deviceStateMapFlow.collectAsStateWithLifecycle()
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    val cameraPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        rememberMultiplePermissionsState(
+            listOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        )
+    } else {
+        rememberMultiplePermissionsState(
+            listOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        )
+    }
     val firstCameraPermissionState by remember {
-        mutableStateOf(cameraPermissionState.status.isGranted)
+        mutableStateOf(cameraPermissionState.allPermissionsGranted)
     }
 
     InitializeScope {
         viewModel.shiftCurrentFamily()
     }
 
-    LaunchedEffect(cameraPermissionState.status.isGranted) {
-        val isGranted = cameraPermissionState.status.isGranted
+    LaunchedEffect(cameraPermissionState.allPermissionsGranted) {
+        val isGranted = cameraPermissionState.allPermissionsGranted
         if (firstCameraPermissionState != isGranted && isGranted) {
             TuyaSdkManager.openScan(context)
         }
@@ -93,10 +112,10 @@ fun HomeScreen(
         enableTitleActionIcon = true,
         actionIconPainter = painterResource(R.drawable.ic_add),
         onActionPressed = {
-            if (cameraPermissionState.status.isGranted) {
+            if (cameraPermissionState.allPermissionsGranted) {
                 TuyaSdkManager.openScan(context)
             } else {
-                cameraPermissionState.launchPermissionRequest()
+                cameraPermissionState.launchMultiplePermissionRequest()
             }
         }
     ) {
@@ -117,10 +136,10 @@ fun HomeScreen(
                             text = "Add device",
                             modifier = Modifier.padding(horizontal = 100.dp)
                         ) {
-                            if (cameraPermissionState.status.isGranted) {
+                            if (cameraPermissionState.allPermissionsGranted) {
                                 TuyaSdkManager.openScan(context)
                             } else {
-                                cameraPermissionState.launchPermissionRequest()
+                                cameraPermissionState.launchMultiplePermissionRequest()
                             }
                         }
                     }
@@ -142,7 +161,13 @@ fun HomeScreen(
                             isOnline = deviceStateMap[device.devId]?.online ?: false,
                             switch = deviceStateMap[device.devId]?.switch ?: false,
                             onSwitchChange = { device, switch ->
-                                viewModel.switch(devId = device.devId, switch = switch)
+                                scope.launch {
+                                    val result = viewModel.switch(device = device, switch = switch)
+                                    val errorMsg = result.exceptionOrNull()?.message
+                                    if (!errorMsg.isNullOrEmpty()) {
+                                        snackBarState.showSnackbar(errorMsg)
+                                    }
+                                }
                             },
                             onClick = {
                                 scope.launch {

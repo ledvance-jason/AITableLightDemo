@@ -15,6 +15,7 @@ import com.ledvance.ai.light.viewmodel.LoginViewModel
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LoadingCard
+import com.ledvance.ui.component.rememberSnackBarState
 import kotlinx.coroutines.launch
 
 /**
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), onLoginSuccess: () -> Unit) {
     val scope = rememberCoroutineScope()
     var loading by remember { mutableStateOf(false) }
+    val snackBarState = rememberSnackBarState()
     if (loading) {
         LoadingCard()
     }
@@ -39,8 +41,14 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), onLoginSuccess: () 
                 loading = true
                 val result = viewModel.login()
                 loading = false
-                if (result) {
-                    onLoginSuccess.invoke()
+                when {
+                    result.isSuccess -> onLoginSuccess.invoke()
+                    result.isFailure -> {
+                        val message = result.exceptionOrNull()?.message
+                        if (!message.isNullOrEmpty()) {
+                            snackBarState.showSnackbar(message)
+                        }
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.ledvance.ai.light.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.ledvance.tuya.data.repo.ITuyaRepo
+import com.thingclips.smart.android.user.bean.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -17,8 +18,8 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    suspend fun login(): Boolean {
-        val user = tuyaRepo.getAccountApi().loginWithUid("86", "ledvanceaitablelight", "11111111")
-        return user != null
+    suspend fun login(): Result<User?> {
+        val result = tuyaRepo.getAccountApi().loginWithUid("86", "ledvanceaitablelight", "11111111")
+        return result
     }
 }

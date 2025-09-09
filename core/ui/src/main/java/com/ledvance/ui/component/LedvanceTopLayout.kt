@@ -3,15 +3,23 @@ package com.ledvance.ui.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,6 +43,7 @@ fun LedvanceTopLayout(
     rightIconContentDescription: String? = null,
     onRightIconClick: (() -> Unit)? = null
 ) {
+    val onBack by rememberUpdatedState(onBackClick)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,12 +55,15 @@ fun LedvanceTopLayout(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.debouncedClickable(onClick = { onBackClick?.invoke() })
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .clip(shape = RoundedCornerShape(10.dp))
+                    .debouncedClickable(onClick = { onBack?.invoke() })
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_back),
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = "back",
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(18.dp),
                     tint = AppTheme.colors.primary
                 )
                 Text(

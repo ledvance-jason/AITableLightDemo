@@ -1,7 +1,5 @@
 package com.ledvance.ai.light.screen
 
-import android.Manifest
-import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +20,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,8 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.ledvance.ai.light.ui.DeviceItem
 import com.ledvance.ai.light.viewmodel.HomeViewModel
 import com.ledvance.tuya.TuyaSdkManager
@@ -48,6 +43,7 @@ import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LoadingCard
 import com.ledvance.ui.component.PullRefresh
 import com.ledvance.ui.component.rememberSnackBarState
+import com.ledvance.ui.component.showToast
 import com.thingclips.smart.sdk.bean.DeviceBean
 import kotlinx.coroutines.launch
 
@@ -57,12 +53,12 @@ import kotlinx.coroutines.launch
  * Created date 2025/9/2 17:02
  * Describe : HomeScreen
  */
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onGotoTestMode: () -> Unit,
-    onItemClick: (DeviceBean) -> Unit
+    onGotoAddDevices: () -> Unit,
+    onDeviceClick: (DeviceBean) -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -70,37 +66,9 @@ fun HomeScreen(
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val deviceList by viewModel.deviceListFlow.collectAsStateWithLifecycle()
     val deviceStateMap by viewModel.deviceStateMapFlow.collectAsStateWithLifecycle()
-    val cameraPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        rememberMultiplePermissionsState(
-            listOf(
-                Manifest.permission.CAMERA,
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        )
-    } else {
-        rememberMultiplePermissionsState(
-            listOf(
-                Manifest.permission.CAMERA,
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        )
-    }
-    val firstCameraPermissionState by remember {
-        mutableStateOf(cameraPermissionState.allPermissionsGranted)
-    }
 
     InitializeScope {
         viewModel.shiftCurrentFamily()
-    }
-
-    LaunchedEffect(cameraPermissionState.allPermissionsGranted) {
-        val isGranted = cameraPermissionState.allPermissionsGranted
-        if (firstCameraPermissionState != isGranted && isGranted) {
-            TuyaSdkManager.openScan(context)
-        }
     }
 
     if (uiState.loading) {
@@ -112,11 +80,7 @@ fun HomeScreen(
         enableTitleActionIcon = true,
         actionIconPainter = painterResource(R.drawable.ic_add),
         onActionPressed = {
-            if (cameraPermissionState.allPermissionsGranted) {
-                TuyaSdkManager.openScan(context)
-            } else {
-                cameraPermissionState.launchMultiplePermissionRequest()
-            }
+            onGotoAddDevices.invoke()
         }
     ) {
         PullRefresh(
@@ -136,11 +100,7 @@ fun HomeScreen(
                             text = "Add device",
                             modifier = Modifier.padding(horizontal = 100.dp)
                         ) {
-                            if (cameraPermissionState.allPermissionsGranted) {
-                                TuyaSdkManager.openScan(context)
-                            } else {
-                                cameraPermissionState.launchMultiplePermissionRequest()
-                            }
+                            onGotoAddDevices.invoke()
                         }
                     }
                 }
@@ -165,13 +125,13 @@ fun HomeScreen(
                                     val result = viewModel.switch(device = device, switch = switch)
                                     val errorMsg = result.exceptionOrNull()?.message
                                     if (!errorMsg.isNullOrEmpty()) {
-                                        snackBarState.showSnackbar(errorMsg)
+                                        snackBarState.showToast(errorMsg)
                                     }
                                 }
                             },
                             onClick = {
                                 scope.launch {
-                                    onItemClick.invoke(it)
+                                    onDeviceClick.invoke(it)
                                 }
                             })
                     }
@@ -186,19 +146,35 @@ fun HomeScreen(
         ) {
             var extended by remember { mutableStateOf(false) }
             AnimatedVisibility(visible = extended) {
-                SmallFloatingActionButton(
-                    onClick = onGotoTestMode,
-                    shape = CircleShape,
-                    contentColor = Color.Black,
-                    containerColor = Color.White,
-                    modifier = Modifier
-                        .padding(bottom = 20.dp)
-                        .size(48.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_test_mode),
-                        contentDescription = "More"
-                    )
+                Column {
+                    SmallFloatingActionButton(
+                        onClick = { TuyaSdkManager.openScan(context) },
+                        shape = CircleShape,
+                        contentColor = Color.Black,
+                        containerColor = Color.White,
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .size(48.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_qr_code),
+                            contentDescription = "Scan"
+                        )
+                    }
+                    SmallFloatingActionButton(
+                        onClick = onGotoTestMode,
+                        shape = CircleShape,
+                        contentColor = Color.Black,
+                        containerColor = Color.White,
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .size(48.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_test_mode),
+                            contentDescription = "More"
+                        )
+                    }
                 }
             }
             SmallFloatingActionButton(

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -48,7 +49,8 @@ class HomeViewModel @Inject constructor(
         initialValue = mapOf()
     )
 
-    suspend fun shiftCurrentFamily() {
+    suspend fun shiftCurrentFamily() = withContext(Dispatchers.IO) {
+        Timber.tag(TAG).i("shiftCurrentFamily begin")
         uiStateFlow.update { it.copy(loading = true) }
         val currentFamilyId = tuyaRepo.getHomeApi().getCurrentHomeId()
         val homeDetail = if (currentFamilyId != 0L) {
@@ -63,6 +65,8 @@ class HomeViewModel @Inject constructor(
             tuyaRepo.getMatterApi().initDevicesFabricNodes(homeId)
             collectHomeStatusFlow()
         }
+        tuyaRepo.getHomeApi().updateCurrentHomeDevices()
+        Timber.tag(TAG).i("shiftCurrentFamily: ${homeDetail?.homeId} end")
         uiStateFlow.update { it.copy(loading = false) }
     }
 
@@ -135,6 +139,6 @@ class HomeViewModel @Inject constructor(
 }
 
 data class HomeUIState(
-    val loading: Boolean = false,
+    val loading: Boolean = true,
     val isRefreshing: Boolean = false
 )

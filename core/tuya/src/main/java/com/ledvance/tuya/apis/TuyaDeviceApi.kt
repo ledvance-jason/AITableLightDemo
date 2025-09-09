@@ -6,6 +6,7 @@ import com.ledvance.utils.extensions.toJson
 import com.thingclips.sdk.os.ThingOSDevice
 import com.thingclips.smart.android.device.enums.ThingSmartThingMessageType
 import com.thingclips.smart.home.sdk.ThingHomeSdk
+import com.thingclips.smart.home.sdk.bean.ConfigProductInfoBean
 import com.thingclips.smart.sdk.api.IResultCallback
 import com.thingclips.smart.sdk.api.IThingDataCallback
 import com.thingclips.smart.sdk.bean.DeviceBean
@@ -124,4 +125,23 @@ internal class TuyaDeviceApi @Inject constructor() : ITuyaDeviceApi {
     override fun getDevice(devId: String): DeviceBean? {
         return ThingHomeSdk.getDataInstance().getDeviceBean(devId)
     }
+
+    suspend fun getActivatorDeviceInfo(pid: String, uuid: String, mac: String) =
+        suspendCancellableCoroutine {
+            Timber.tag(TAG).i("getActivatorDeviceInfo: pid->$pid,uuid->$uuid,mac->$mac")
+            ThingHomeSdk.getActivatorInstance().getActivatorDeviceInfo(pid, uuid, mac, object :
+                IThingDataCallback<ConfigProductInfoBean> {
+                override fun onSuccess(result: ConfigProductInfoBean?) {
+                    val name = result?.name ?: ""
+                    val icon = result?.icon ?: ""
+                    Timber.tag(TAG).i("getActivatorDeviceInfo onSuccess: name->$name,icon->$icon ${result?.toJson()}")
+                    it.takeIf { it.isActive }?.resume(name to icon)
+                }
+
+                override fun onError(errorCode: String?, errorMessage: String?) {
+                    Timber.tag(TAG).e("getActivatorDeviceInfo onError: $errorCode $errorMessage")
+                    it.takeIf { it.isActive }?.resume("" to "")
+                }
+            })
+        }
 }

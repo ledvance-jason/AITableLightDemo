@@ -24,7 +24,6 @@ fun DeviceBean.isSupportSwitch(): Boolean {
 
 fun DeviceBean.getSwitchState(): Boolean {
     val deviceSwitchDp = getDeviceSwitchDp()
-    Timber.tag("TAG").d("getSwitchState: ${getDps()}")
     return getDps()?.get("${deviceSwitchDp.dpId}")?.toString().toBoolean()
 }
 

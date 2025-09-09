@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.accompanist.permissions)
+    implementation(libs.dotlottie)
 
     implementation(libs.navigation3.runtime)
     implementation(libs.navigation3.ui)

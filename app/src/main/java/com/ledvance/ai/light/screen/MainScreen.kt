@@ -46,7 +46,7 @@ fun MainScreen() {
                 modifier = Modifier.weight(1f)
             ) { index ->
                 when (index) {
-                    0 -> HomeScreen(onItemClick = {}, onGotoTestMode = {})
+                    0 -> HomeScreen(onDeviceClick = {}, onGotoTestMode = {}, onGotoAddDevices = {})
                     1 -> MoreScreen()
                 }
             }

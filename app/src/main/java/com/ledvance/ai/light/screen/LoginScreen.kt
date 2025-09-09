@@ -16,6 +16,7 @@ import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LoadingCard
 import com.ledvance.ui.component.rememberSnackBarState
+import com.ledvance.ui.component.showToast
 import kotlinx.coroutines.launch
 
 /**
@@ -46,7 +47,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), onLoginSuccess: () 
                     result.isFailure -> {
                         val message = result.exceptionOrNull()?.message
                         if (!message.isNullOrEmpty()) {
-                            snackBarState.showSnackbar(message)
+                            snackBarState.showToast(message)
                         }
                     }
                 }

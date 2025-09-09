@@ -40,6 +40,7 @@ import com.ledvance.ui.component.LedvanceSlider
 import com.ledvance.ui.component.LedvanceSwitch
 import com.ledvance.ui.component.LoadingCard
 import com.ledvance.ui.component.rememberSnackBarState
+import com.ledvance.ui.component.showToast
 import com.ledvance.ui.component.workmode.ColorModePicker
 import com.ledvance.ui.component.workmode.WhiteModePicker
 import com.ledvance.ui.extensions.clipWithBorder
@@ -88,7 +89,7 @@ fun DevicePanelScreen(
                     val result = viewModel.switch(it)
                     val errorMsg = result.exceptionOrNull()?.message
                     if (!errorMsg.isNullOrEmpty()) {
-                        snackBarState.showSnackbar(errorMsg)
+                        snackBarState.showToast(errorMsg)
                     }
                 }
             }

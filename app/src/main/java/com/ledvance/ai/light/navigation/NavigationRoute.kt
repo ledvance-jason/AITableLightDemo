@@ -24,3 +24,9 @@ data object MoreRoute : NavigationRoute
 
 @Serializable
 data object TestModeRoute : NavigationRoute
+
+@Serializable
+data object AddDevicesRoute : NavigationRoute
+
+@Serializable
+data object SelectWiFiNetwork : NavigationRoute

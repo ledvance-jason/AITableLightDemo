@@ -38,7 +38,6 @@ internal class TuyaHomeApi @Inject constructor() : ITuyaHomeApi {
             )
         Timber.tag(TAG).i("shiftCurrentHome: $homeId $homeName")
         familyService.shiftCurrentFamily(homeId, homeName)
-        updateCurrentHomeDevices()
     }
 
     override fun getCurrentHomeId(): Long {

@@ -1,9 +1,7 @@
 package com.ledvance.tuya.ktx
 
-import com.ledvance.tuya.command.dps.DeviceDp
 import com.thingclips.smart.android.device.bean.SchemaBean
 import com.thingclips.smart.sdk.bean.DeviceBean
-import timber.log.Timber
 
 /**
  * @author : jason yin
@@ -11,15 +9,21 @@ import timber.log.Timber
  * Created date 2025/9/4 14:40
  * Describe : DeviceBeanKtx
  */
-
-private val allSwitchCodes = listOf("switch")
-private val productSwitchDpMap by lazy {
-    mutableMapOf<String?, DeviceDp>()
+fun DeviceBean.isSupportSwitch(): Boolean {
+    return switchDp != 0 || isSupportDpCode(*allSwitchCodes)
 }
 
-fun DeviceBean.isSupportSwitch(): Boolean {
+fun DeviceBean.isSupportColorMode(): Boolean {
+    return isSupportDpCode(*allHsvCodes)
+}
+
+fun DeviceBean.isSupportWhiteMode(): Boolean {
+    return isSupportDpCode(*allBrightnessCodes) || isSupportDpCode(*allCctCodes)
+}
+
+fun DeviceBean.isSupportDpCode(vararg dpCode: String): Boolean {
     val dpCodeSchemaMap = productBean?.schemaInfo?.dpCodeSchemaMap ?: mapOf()
-    return allSwitchCodes.any { dpCodeSchemaMap.containsKey(it) }
+    return dpCode.any { dpCodeSchemaMap.containsKey(it) }
 }
 
 fun DeviceBean.getSwitchState(): Boolean {
@@ -28,31 +32,6 @@ fun DeviceBean.getSwitchState(): Boolean {
 }
 
 fun DeviceBean.isTuyaLinkDevice(): Boolean = this.isSupportThingModelDevice
-
-fun DeviceBean.getDeviceSwitchDp(): DeviceDp {
-    val pid = getProductId()
-    val deviceSwitchDp = productSwitchDpMap[pid]
-    if (deviceSwitchDp != null) {
-        return deviceSwitchDp
-    }
-    return when {
-        switchDp != 0 -> {
-            val code = getDpSchemaList().find { it.id == "$switchDp" }?.code ?: ""
-            val deviceDp = DeviceDp(dpId = switchDp, code = code)
-            productSwitchDpMap[pid] = deviceDp
-            deviceDp
-        }
-
-        else -> {
-            val dpSchema = getDpSchemaList().find { allSwitchCodes.contains(it.code) }
-            val dpId = dpSchema?.id?.toIntOrNull() ?: 1
-            val dpCode = dpSchema?.code ?: "switch"
-            val deviceDp = DeviceDp(dpId = dpId, code = dpCode)
-            productSwitchDpMap[pid] = deviceDp
-            deviceDp
-        }
-    }
-}
 
 fun DeviceBean.getDpSchemaList(): Collection<SchemaBean> {
     return getDpCodeSchemaMap().values

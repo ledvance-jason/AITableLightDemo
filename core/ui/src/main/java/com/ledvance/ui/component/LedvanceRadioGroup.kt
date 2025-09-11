@@ -1,7 +1,6 @@
 package com.ledvance.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,22 +26,22 @@ import com.ledvance.ui.theme.AppTheme
  * Created date 2025/9/5 11:16
  * Describe : LedvanceRadioGroup
  */
-interface IRadioGroupItem {
+interface IRadioGroupItem<T> {
     val title: String
-    val id: Int
+    val value: T
 }
 
 @Composable
-fun LedvanceRadioGroup(
-    selectorItem: IRadioGroupItem,
-    items: List<IRadioGroupItem>,
+fun <T> LedvanceRadioGroup(
+    selectorItem: IRadioGroupItem<T>,
+    items: List<IRadioGroupItem<T>>,
     modifier: Modifier = Modifier,
     shape: Shape = CircleShape,
     checkedColor: Color = AppTheme.colors.primary,
     backgroundColor: Color = Color.White,
     checkedTextColor: Color = Color.White,
     textColor: Color = AppTheme.colors.title,
-    onCheckedChange: (IRadioGroupItem) -> Unit
+    onCheckedChange: (IRadioGroupItem<T>) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -59,7 +58,7 @@ fun LedvanceRadioGroup(
                     .padding(2.dp)
                     .fillMaxHeight()
                     .background(
-                        color = if (selectorItem.id == it.id) checkedColor else Color.Transparent,
+                        color = if (selectorItem.value == it.value) checkedColor else Color.Transparent,
                         shape = shape
                     )
                     .clip(shape)
@@ -69,7 +68,7 @@ fun LedvanceRadioGroup(
             ) {
                 Text(
                     text = it.title,
-                    color = if (selectorItem.id == it.id) checkedTextColor else textColor,
+                    color = if (selectorItem.value == it.value) checkedTextColor else textColor,
                     style = AppTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                 )

@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +33,6 @@ import com.ledvance.ai.light.ui.FlowRowSection
 import com.ledvance.ai.light.ui.ModeView
 import com.ledvance.ai.light.ui.ScenesView
 import com.ledvance.ai.light.viewmodel.DevicePanelViewModel
-import com.ledvance.ui.component.IRadioGroupItem
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceRadioGroup
 import com.ledvance.ui.component.LedvanceScreen
@@ -66,7 +66,6 @@ fun DevicePanelScreen(
     val scope = rememberCoroutineScope()
     val snackBarState = rememberSnackBarState()
     val state = rememberScrollState()
-    val deviceStateMap by viewModel.deviceStateMapFlow.collectAsStateWithLifecycle()
     if (uiState.loading) {
         LoadingCard()
     }
@@ -82,17 +81,7 @@ fun DevicePanelScreen(
                 .padding(horizontal = 24.dp)
         ) {
 
-            LightingControl(
-                switch = deviceStateMap[devId]?.switch ?: false,
-            ) {
-                scope.launch {
-                    val result = viewModel.switch(it)
-                    val errorMsg = result.exceptionOrNull()?.message
-                    if (!errorMsg.isNullOrEmpty()) {
-                        snackBarState.showToast(errorMsg)
-                    }
-                }
-            }
+            LightingControl(viewModel = viewModel, snackBarState = snackBarState)
 
             ModeView(
                 items = Mode.allMode,
@@ -165,13 +154,15 @@ fun DevicePanelScreen(
 
 @Composable
 private fun LightingControl(
-    switch: Boolean,
-    modifier: Modifier = Modifier,
-    onSwitchChange: (Boolean) -> Unit
+    viewModel: DevicePanelViewModel,
+    snackBarState: SnackbarHostState,
+    modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+    val deviceState by viewModel.deviceStateFlow.collectAsStateWithLifecycle()
     val allWorkMode = remember { WorkModeSegment.allWorkModeSegment }
-    var selectedWorkMode by remember {
-        mutableStateOf<IRadioGroupItem>(allWorkMode.first())
+    var selectedWorkMode by remember(deviceState.workMode) {
+        mutableStateOf(WorkModeSegment.ofWorkMode(deviceState.workMode))
     }
     Column(
         modifier = Modifier
@@ -190,14 +181,20 @@ private fun LightingControl(
                 modifier = Modifier.weight(1f)
             )
             LedvanceSwitch(
-                checked = switch,
+                checked = deviceState.switch,
                 onCheckedChange = {
-                    onSwitchChange.invoke(it)
+                    scope.launch {
+                        val result = viewModel.switch(it)
+                        val errorMsg = result.exceptionOrNull()?.message
+                        if (!errorMsg.isNullOrEmpty()) {
+                            snackBarState.showToast(errorMsg)
+                        }
+                    }
                 }
             )
         }
 
-        if (switch) {
+        if (deviceState.switch) {
             LedvanceRadioGroup(
                 selectorItem = selectedWorkMode,
                 items = allWorkMode,
@@ -208,20 +205,45 @@ private fun LightingControl(
                 checkedTextColor = AppTheme.colors.title,
                 textColor = AppTheme.colors.title,
                 onCheckedChange = {
-                    selectedWorkMode = it
+                    scope.launch {
+                        val result = viewModel.setWorkMode(it.value)
+                        val errorMsg = result.exceptionOrNull()?.message
+                        if (!errorMsg.isNullOrEmpty()) {
+                            snackBarState.showToast(errorMsg)
+                        } else {
+                            selectedWorkMode = WorkModeSegment.ofWorkMode(it.value)
+                        }
+                    }
                 }
             )
 
-            if (selectedWorkMode.id == WorkModeSegment.ColorMode.id) {
+            if (selectedWorkMode == WorkModeSegment.ColorMode) {
                 ColorModePicker(
-                    hue = 0, sat = 0, brightness = 50,
-                    onHsv = { h, s, v -> },
-                    onHsvComplete = { h, s, v -> })
+                    hue = deviceState.hsv.h,
+                    sat = deviceState.hsv.s,
+                    brightness = deviceState.hsv.v,
+                    onHsv = { h, s, v ->
+                        viewModel.controlHsv(h, s, v)
+                    },
+                    onHsvComplete = { h, s, v ->
+                        viewModel.setHsv(h, s, v)
+                    })
             } else {
                 WhiteModePicker(
-                    cct = 0, brightness = 50,
-                    onBrightnessChanged = {},
-                    onCCTChanged = { cct, color -> },
+                    cct = deviceState.cctBrightness.cct,
+                    brightness = deviceState.cctBrightness.brightness,
+                    onBrightnessChanged = {
+                        viewModel.controlCctBrightness(deviceState.cctBrightness.cct, it)
+                    },
+                    onBrightnessComplete = {
+                        viewModel.setCctBrightness(deviceState.cctBrightness.cct, it)
+                    },
+                    onCCTChanged = { cct, color ->
+                        viewModel.controlCctBrightness(cct, deviceState.cctBrightness.brightness)
+                    },
+                    onCCTComplete = { cct, color ->
+                        viewModel.setCctBrightness(cct, deviceState.cctBrightness.brightness)
+                    }
                 )
             }
         }

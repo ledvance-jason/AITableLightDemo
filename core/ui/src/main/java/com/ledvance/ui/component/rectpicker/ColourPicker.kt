@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun ColourPicker(
     modifier: Modifier = Modifier,
-    // hue:0~359f,sat:0.01~1f,brightness:1~100
+    // hue:0~360f,sat:0~1f,brightness:1~100
     initialHsv: Hsv = Hsv(0f, 1f, 100),
     showBrightness: Boolean = true,
     minBrightness: Int = 1,
@@ -49,8 +49,8 @@ internal fun ColourPicker(
         val w = pickerSize.width - (thumbRadius * 2)
         val h = pickerSize.height - (thumbRadius * 2)
 
-        val hue = ((coor.x - thumbRadius) / w * 360f).coerceIn(0f, 359f)
-        val sat = ((coor.y - thumbRadius) / h).coerceIn(0.01f, 1f)
+        val hue = ((coor.x - thumbRadius) / w * 360f).coerceIn(0f, 360f)
+        val sat = ((coor.y - thumbRadius) / h).coerceIn(0f, 1f)
 
         return hsv.copy(hue = hue, saturation = sat)
     }

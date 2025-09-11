@@ -7,7 +7,8 @@ package com.ledvance.tuya.beans
  * Describe : TuyaHomeChangeState
  */
 sealed interface TuyaHomeChangeState {
-    data class DeviceDpUpdate(val devId: String, val dps: Map<String?, Any?>) : TuyaHomeChangeState
+    data object None: TuyaHomeChangeState
+    data class DeviceDpUpdate(val devId: String, val dps: Map<String, Any?>) : TuyaHomeChangeState
     data class DeviceRemoved(val devId: String) : TuyaHomeChangeState
     data class DeviceOnline(val devId: String, val online: Boolean) : TuyaHomeChangeState
     data class DeviceNetworkStatus(val devId: String, val status: Boolean) : TuyaHomeChangeState

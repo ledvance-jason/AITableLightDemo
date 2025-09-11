@@ -15,6 +15,7 @@ import com.ledvance.tuya.apis.domain.ITuyaLongLinkApi
 import com.ledvance.tuya.apis.domain.ITuyaMatterApi
 import com.ledvance.tuya.apis.domain.ITuyaScanDeviceApi
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * @author : jason yin
@@ -22,6 +23,7 @@ import javax.inject.Inject
  * Created date 2025/9/5 08:39
  * Describe : TuyaRepo
  */
+@Singleton
 internal class TuyaRepo @Inject constructor(
     private val tuyaAccountApi: TuyaAccountApi,
     private val tuyaActivatorApi: TuyaActivatorApi,

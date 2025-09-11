@@ -14,6 +14,7 @@ import com.thingclips.smart.home.sdk.api.IThingHomeStatusListener
 import com.thingclips.smart.sdk.api.IDevListener
 import com.thingclips.smart.sdk.api.IThingLinkDeviceListener
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
@@ -33,6 +34,7 @@ internal class TuyaLongLinkApi @Inject constructor() : ITuyaLongLinkApi {
     private val TAG = "TuyaLongLinkApi"
 
     private val homeDeviceStateFlow = MutableStateFlow<Map<String, DeviceState>>(mapOf())
+    private val deviceStatusFlow = MutableStateFlow<TuyaHomeChangeState>(TuyaHomeChangeState.None)
 
     override suspend fun getHomeStatusFlow(homeId: Long) = callbackFlow {
         Timber.tag(TAG).i("getHomeStatusFlow: homeId->$homeId")
@@ -55,8 +57,10 @@ internal class TuyaLongLinkApi @Inject constructor() : ITuyaLongLinkApi {
             ) {
                 Timber.tag(TAG).i("device status onDpUpdate: $devId,${dpIdStr}")
                 devId ?: return
-                val dpIdMap = dpIdStr?.jsonAsOrNull<Map<String?, Any?>>() ?: return
-                trySend(TuyaHomeChangeState.DeviceDpUpdate(devId, dpIdMap))
+                val dpIdMap = dpIdStr?.jsonAsOrNull<Map<String, Any?>>() ?: return
+                val state = TuyaHomeChangeState.DeviceDpUpdate(devId, dpIdMap)
+                trySend(state)
+                deviceStatusFlow.update { state }
                 updateDeviceSwitchState(devId, dpIdMap)
             }
 
@@ -67,20 +71,26 @@ internal class TuyaLongLinkApi @Inject constructor() : ITuyaLongLinkApi {
             override fun onStatusChanged(devId: String?, online: Boolean) {
                 Timber.tag(TAG).i("device status onStatusChanged: $devId, online:$online")
                 devId ?: return
-                trySend(TuyaHomeChangeState.DeviceOnline(devId, online))
+                val state = TuyaHomeChangeState.DeviceOnline(devId, online)
+                trySend(state)
+                deviceStatusFlow.update { state }
                 updateHomeDeviceState(devId = devId, online = online)
             }
 
             override fun onNetworkStatusChanged(devId: String?, status: Boolean) {
                 Timber.tag(TAG).i("device status onNetworkStatusChanged: $devId, status:$status")
                 devId ?: return
-                trySend(TuyaHomeChangeState.DeviceNetworkStatus(devId, status))
+                val state = TuyaHomeChangeState.DeviceNetworkStatus(devId, status)
+                trySend(state)
+                deviceStatusFlow.update { state }
             }
 
             override fun onDevInfoUpdate(devId: String?) {
                 Timber.tag(TAG).i("device status onDevInfoUpdate: $devId")
                 devId ?: return
-                trySend(TuyaHomeChangeState.DeviceInfoUpdate(devId))
+                val state = TuyaHomeChangeState.DeviceInfoUpdate(devId)
+                trySend(state)
+                deviceStatusFlow.update { state }
             }
         }
 
@@ -88,14 +98,18 @@ internal class TuyaLongLinkApi @Inject constructor() : ITuyaLongLinkApi {
             override fun onDeviceAdded(devId: String?) {
                 Timber.tag(TAG).i("home status onDeviceAdded: $devId")
                 devId ?: return
-                trySend(TuyaHomeChangeState.DeviceAdded(devId))
+                val state = TuyaHomeChangeState.DeviceAdded(devId)
+                trySend(state)
+                deviceStatusFlow.update { state }
                 updateHomeDeviceState(devId)
             }
 
             override fun onDeviceRemoved(devId: String?) {
                 Timber.tag(TAG).i("home status onDeviceRemoved: $devId")
                 devId ?: return
-                trySend(TuyaHomeChangeState.DeviceRemoved(devId))
+                val state = TuyaHomeChangeState.DeviceRemoved(devId)
+                trySend(state)
+                deviceStatusFlow.update { state }
                 homeDeviceStateFlow.updateMap { remove(devId) }
             }
 
@@ -130,7 +144,7 @@ internal class TuyaLongLinkApi @Inject constructor() : ITuyaLongLinkApi {
         }
     }
 
-    private fun updateDeviceSwitchState(devId: String, dpIdMap: Map<String?, Any?>) {
+    private fun updateDeviceSwitchState(devId: String, dpIdMap: Map<String, Any?>) {
         val deviceSwitchDp = ThingHomeSdk.getDataInstance().getDeviceBean(devId)
             ?.getDeviceSwitchDp() ?: return
         val dpId = "${deviceSwitchDp.dpId}"
@@ -145,6 +159,10 @@ internal class TuyaLongLinkApi @Inject constructor() : ITuyaLongLinkApi {
 
     override fun getHomeDeviceStateFlow(): StateFlow<Map<String, DeviceState>> {
         return homeDeviceStateFlow
+    }
+
+    override fun getDeviceStatusFlow(): Flow<TuyaHomeChangeState> {
+        return deviceStatusFlow
     }
 
     override fun updateHomeDeviceState(devId: String, switch: Boolean?, online: Boolean?) {

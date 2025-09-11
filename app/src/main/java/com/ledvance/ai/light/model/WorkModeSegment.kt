@@ -1,5 +1,6 @@
 package com.ledvance.ai.light.model
 
+import com.ledvance.tuya.beans.WorkMode
 import com.ledvance.ui.component.IRadioGroupItem
 
 /**
@@ -8,9 +9,10 @@ import com.ledvance.ui.component.IRadioGroupItem
  * Created date 2025/9/5 15:22
  * Describe : WorkModeSegment
  */
-enum class WorkModeSegment(override val title: String, override val id: Int) : IRadioGroupItem {
-    ColorMode("Color mode", id = 1),
-    WhiteMode("White mode", id = 2),
+enum class WorkModeSegment(override val title: String, override val value: WorkMode) :
+    IRadioGroupItem<WorkMode> {
+    ColorMode("Color mode", value = WorkMode.Colour),
+    WhiteMode("White mode", value = WorkMode.White),
     ;
 
     companion object {
@@ -18,5 +20,13 @@ enum class WorkModeSegment(override val title: String, override val id: Int) : I
             ColorMode,
             WhiteMode,
         )
+
+        fun ofValue(value: String): WorkModeSegment {
+            return entries.find { it.value.value == value } ?: ColorMode
+        }
+
+        fun ofWorkMode(value: WorkMode): WorkModeSegment {
+            return entries.find { it.value == value } ?: ColorMode
+        }
     }
 }

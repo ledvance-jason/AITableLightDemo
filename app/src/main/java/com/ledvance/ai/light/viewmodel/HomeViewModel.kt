@@ -102,6 +102,7 @@ class HomeViewModel @Inject constructor(
 
                     is TuyaHomeChangeState.GroupAdded -> {}
                     is TuyaHomeChangeState.MeshAdded -> {}
+                    else -> {}
                 }
             }
         }

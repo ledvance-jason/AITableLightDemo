@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,10 @@ import com.ledvance.ui.R
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.theme.AppTheme
+import com.ledvance.utils.extensions.isBluetoothEnable
+import com.ledvance.utils.extensions.isLocationEnable
+import com.ledvance.utils.extensions.openBluetoothSettingsPage
+import com.ledvance.utils.extensions.openLocationSettingsPage
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import timber.log.Timber
@@ -71,6 +76,7 @@ private val requiredBtPermissions: List<String>
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddDevicesScreen(viewModel: AddDevicesViewModel = hiltViewModel(), onBackPressed: () -> Unit) {
+    val context = LocalContext.current
     val scanDevices by viewModel.scanDevicesFlow.collectAsStateWithLifecycle()
     var startSearch by remember { mutableStateOf(false) }
     val cameraPermissionState = rememberMultiplePermissionsState(requiredBtPermissions)
@@ -98,6 +104,14 @@ fun AddDevicesScreen(viewModel: AddDevicesViewModel = hiltViewModel(), onBackPre
         when {
             !startSearch -> {
                 LedvanceButton(text = "Start automatic search") {
+                    if (!context.isBluetoothEnable) {
+                        context.openBluetoothSettingsPage()
+                        return@LedvanceButton
+                    }
+                    if (!context.isLocationEnable) {
+                        context.openLocationSettingsPage()
+                        return@LedvanceButton
+                    }
                     if (cameraPermissionState.allPermissionsGranted) {
                         viewModel.startScanDevice()
                         startSearch = true

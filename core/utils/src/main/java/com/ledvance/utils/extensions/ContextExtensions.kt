@@ -1,9 +1,11 @@
 package com.ledvance.utils.extensions
 
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.location.LocationManager
 import android.net.wifi.WifiManager
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy.Builder
@@ -54,6 +56,14 @@ fun Context.openWifiSettingsPage() {
     intent?.also { startActivity(it) }
 }
 
+fun Context.openLocationSettingsPage() {
+    safeStartActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+}
+
+fun Context.openBluetoothSettingsPage() {
+    safeStartActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+}
+
 @SuppressLint("QueryPermissionsNeeded")
 fun Context.resolveActivity(intent: Intent?): Boolean = intent?.run {
     try {
@@ -72,9 +82,11 @@ fun Context.safeStartActivity(intent: Intent): Boolean = tryCatchReturn {
 } ?: false
 
 
-val Context.wifiManager: WifiManager
-    get() = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+val Context.wifiManager get() = getSystemService(Context.WIFI_SERVICE) as WifiManager
 
+val Context.bluetoothManager get() = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+
+val Context.locationManager get() = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
 val Context.wifiSsid: String
     get() = tryCatchReturn {
@@ -85,3 +97,9 @@ val Context.wifiSsid: String
             tryCatchReturn { it.substring(1 until it.length - 1) } ?: it
         } ?: ""
     } ?: ""
+
+val Context.isBluetoothEnable: Boolean
+    get() = bluetoothManager.adapter?.isEnabled ?: false
+
+val Context.isLocationEnable: Boolean
+    get() = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)

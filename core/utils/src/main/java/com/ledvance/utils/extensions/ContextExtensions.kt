@@ -1,9 +1,13 @@
 package com.ledvance.utils.extensions
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.net.wifi.WifiManager
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy.Builder
+import android.provider.Settings
 import timber.log.Timber
 
 /**
@@ -39,3 +43,45 @@ fun Context.enableTimerDebugTree() {
         Timber.plant(Timber.DebugTree())
     }
 }
+
+
+fun Context.openWifiSettingsPage() {
+    val intent = Intent(WifiManager.ACTION_PICK_WIFI_NETWORK).let { intent ->
+        resolveActivity(intent).let { if (it) intent else null }
+    } ?: Intent(Settings.ACTION_WIFI_SETTINGS).let { intent ->
+        resolveActivity(intent).let { if (it) intent else null }
+    }
+    intent?.also { startActivity(it) }
+}
+
+@SuppressLint("QueryPermissionsNeeded")
+fun Context.resolveActivity(intent: Intent?): Boolean = intent?.run {
+    try {
+        resolveActivity(packageManager) != null
+    } catch (e: Exception) {
+        false
+    }
+} ?: false
+
+fun Context.safeStartActivity(intent: Intent): Boolean = tryCatchReturn {
+    if (!resolveActivity(intent)) {
+        return@tryCatchReturn false
+    }
+    startActivity(intent)
+    return@tryCatchReturn true
+} ?: false
+
+
+val Context.wifiManager: WifiManager
+    get() = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+
+val Context.wifiSsid: String
+    get() = tryCatchReturn {
+        wifiManager.connectionInfo?.ssid?.takeIf {
+            // 未赋予定位权限导致获取不到名称
+            !it.contains("<unknown ssid>")
+        }?.let {
+            tryCatchReturn { it.substring(1 until it.length - 1) } ?: it
+        } ?: ""
+    } ?: ""

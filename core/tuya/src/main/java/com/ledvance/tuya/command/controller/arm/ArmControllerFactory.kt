@@ -1,4 +1,4 @@
-package com.ledvance.tuya.command.light
+package com.ledvance.tuya.command.controller.arm
 
 import com.thingclips.smart.home.sdk.ThingHomeSdk
 
@@ -8,14 +8,13 @@ import com.thingclips.smart.home.sdk.ThingHomeSdk
  * Created date 2025/9/11 13:13
  * Describe : LightControllerFactory
  */
-class LightControllerFactory {
+class ArmControllerFactory {
     companion object Companion {
-        fun createController(devId: String): ILightController {
+        fun createController(devId: String): IArmController {
             val device = ThingHomeSdk.getDataInstance().getDeviceBean(devId)
             return when {
-                device == null -> NoneLightController()
-                device.isMatter -> MatterLightController(device)
-                else -> WifiLightController(device)
+                device == null -> NoneArmController()
+                else -> ArmController(device)
             }
         }
     }

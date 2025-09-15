@@ -26,3 +26,12 @@ suspend fun SnackbarHostState.showToast(
     currentSnackbarData?.dismiss()
     showSnackbar(message, actionLabel, withDismissAction, duration)
 }
+
+suspend fun SnackbarHostState.checkShowToast(result: Result<*>): Boolean {
+    val errorMsg = result.exceptionOrNull()?.message
+    if (!errorMsg.isNullOrEmpty()) {
+        showToast(errorMsg)
+        return true
+    }
+    return false
+}

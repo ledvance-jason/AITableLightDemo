@@ -1,4 +1,4 @@
-package com.ledvance.tuya.command.light
+package com.ledvance.tuya.command.controller.light
 
 import com.ledvance.tuya.beans.CctBrightness
 import com.ledvance.tuya.beans.Hsv
@@ -48,6 +48,7 @@ internal class WifiLightController(device: DeviceBean) : BaseLightController(dev
     }
 
     override suspend fun setHsv(hsv: Hsv): Result<Boolean> {
+        discardControlData()
         val (h, s, v) = hsv
         val newS = ValueConverter.convertRange(
             value = s,
@@ -67,7 +68,7 @@ internal class WifiLightController(device: DeviceBean) : BaseLightController(dev
         val hHex = h.toShort().toHex()
         val sHex = newS.toShort().toHex()
         val vHex = newV.toShort().toHex()
-        return hsvDp.setDpValue("$hHex$sHex$vHex")
+        return hsvDp.sendDp("$hHex$sHex$vHex")
     }
 
     override fun getCctBrightnessFlow(): Flow<CctBrightness> {
@@ -92,6 +93,7 @@ internal class WifiLightController(device: DeviceBean) : BaseLightController(dev
     }
 
     override suspend fun setCctBrightness(cctBrightness: CctBrightness): Result<Boolean> {
+        discardControlData()
         val (cct, brightness) = cctBrightness
         val newCct = ValueConverter.convertRange(
             value = cct,

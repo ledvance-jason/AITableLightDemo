@@ -14,10 +14,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +28,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ledvance.ai.light.model.CustomActions
+import com.ledvance.ai.light.model.CustomAction
 import com.ledvance.ai.light.model.Mode
-import com.ledvance.ai.light.model.Scenes
+import com.ledvance.ai.light.model.Scene
 import com.ledvance.ai.light.model.WorkModeSegment
 import com.ledvance.ai.light.ui.FlowRowSection
 import com.ledvance.ai.light.ui.ModeView
@@ -39,8 +42,8 @@ import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LedvanceSlider
 import com.ledvance.ui.component.LedvanceSwitch
 import com.ledvance.ui.component.LoadingCard
+import com.ledvance.ui.component.checkShowToast
 import com.ledvance.ui.component.rememberSnackBarState
-import com.ledvance.ui.component.showToast
 import com.ledvance.ui.component.workmode.ColorModePicker
 import com.ledvance.ui.component.workmode.WhiteModePicker
 import com.ledvance.ui.extensions.clipWithBorder
@@ -78,63 +81,11 @@ fun DevicePanelScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(state)
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = 20.dp)
         ) {
 
             LightingControl(viewModel = viewModel, snackBarState = snackBarState)
-
-            ModeView(
-                items = Mode.allMode,
-                title = "Mode",
-                modifier = Modifier.padding(top = 20.dp),
-                onItemClick = {
-
-                }
-            )
-
-            ScenesView(
-                modifier = Modifier.padding(top = 20.dp),
-                items = Scenes.allScenes,
-                title = "Scenes"
-            ) {
-
-            }
-            ScenesView(
-                modifier = Modifier.padding(top = 20.dp),
-                items = Scenes.lightEffect,
-                maxItemsInEachRow = 2,
-                title = "Light Effect"
-            ) {
-
-            }
-
-            FlowRowSection(
-                items = CustomActions.allActions,
-                title = "Custom Actions",
-                modifier = Modifier.padding(top = 20.dp),
-                onItemClick = {
-
-                }
-            )
-
-            Text(
-                text = "Volume",
-                color = AppTheme.colors.title,
-                style = AppTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 20.dp, bottom = 15.dp)
-            )
-            LedvanceSlider(
-                value = 100,
-                onValueChange = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp)
-                    .clipWithBorder(
-                        shape = CircleShape,
-                        borderColor = AppTheme.colors.border,
-                        borderWidth = 2.dp
-                    )
-            )
+            ArmControl(viewModel = viewModel, snackBarState = snackBarState)
 
             LedvanceButton(
                 text = "Delete",
@@ -153,13 +104,104 @@ fun DevicePanelScreen(
 }
 
 @Composable
+private fun ArmControl(
+    viewModel: DevicePanelViewModel,
+    snackBarState: SnackbarHostState,
+) {
+    val scope = rememberCoroutineScope()
+    val armUIState by viewModel.armUIStateFlow.collectAsStateWithLifecycle()
+    val selectedScene by rememberUpdatedState(Scene.allScenes.find {
+        it.id == armUIState.scene.value
+    })
+    val selectedLightEffect by rememberUpdatedState(Scene.allScenes.find {
+        it.id == armUIState.lightEffect.value
+    })
+    var volume by remember { mutableIntStateOf(armUIState.volume) }
+    LaunchedEffect(armUIState.volume) {
+        volume = armUIState.volume
+    }
+    ModeView(
+        items = Mode.allMode,
+        title = "Mode",
+        modifier = Modifier.padding(top = 20.dp),
+        onItemClick = {
+            scope.launch {
+                val result = viewModel.setMode(it.id)
+                snackBarState.checkShowToast(result)
+            }
+        }
+    )
+
+    ScenesView(
+        modifier = Modifier.padding(top = 20.dp),
+        selectedItem = selectedScene,
+        items = Scene.allScenes,
+        title = "Scenes"
+    ) {
+        scope.launch {
+            val result = viewModel.setScene(it.id)
+            snackBarState.checkShowToast(result)
+        }
+    }
+
+    ScenesView(
+        modifier = Modifier.padding(top = 20.dp),
+        items = Scene.lightEffect,
+        selectedItem = selectedLightEffect,
+        maxItemsInEachRow = 2,
+        title = "Light Effect"
+    ) {
+        scope.launch {
+            val result = viewModel.setLightEffect(it.id)
+            snackBarState.checkShowToast(result)
+        }
+    }
+
+    FlowRowSection(
+        items = CustomAction.allActions,
+        title = "Custom Actions",
+        modifier = Modifier.padding(top = 20.dp),
+        onItemClick = {
+            scope.launch {
+                val result = viewModel.setCustomAction(it.id)
+                snackBarState.checkShowToast(result)
+            }
+        }
+    )
+
+    Text(
+        text = "Volume",
+        color = AppTheme.colors.title,
+        style = AppTheme.typography.titleMedium,
+        modifier = Modifier.padding(top = 20.dp, bottom = 15.dp)
+    )
+    LedvanceSlider(
+        value = volume,
+        onValueChange = {
+            volume = it
+        },
+        onValueComplete = {
+            viewModel.setVolume(it)
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(45.dp)
+            .clipWithBorder(
+                shape = CircleShape,
+                borderColor = AppTheme.colors.border,
+                borderWidth = 2.dp
+            )
+    )
+}
+
+@Composable
 private fun LightingControl(
     viewModel: DevicePanelViewModel,
     snackBarState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    val deviceState by viewModel.deviceStateFlow.collectAsStateWithLifecycle()
+    val deviceState by viewModel.lightStateFlow.collectAsStateWithLifecycle()
     val allWorkMode = remember { WorkModeSegment.allWorkModeSegment }
     var selectedWorkMode by remember(deviceState.workMode) {
         mutableStateOf(WorkModeSegment.ofWorkMode(deviceState.workMode))
@@ -185,10 +227,7 @@ private fun LightingControl(
                 onCheckedChange = {
                     scope.launch {
                         val result = viewModel.switch(it)
-                        val errorMsg = result.exceptionOrNull()?.message
-                        if (!errorMsg.isNullOrEmpty()) {
-                            snackBarState.showToast(errorMsg)
-                        }
+                        snackBarState.checkShowToast(result)
                     }
                 }
             )
@@ -207,12 +246,7 @@ private fun LightingControl(
                 onCheckedChange = {
                     scope.launch {
                         val result = viewModel.setWorkMode(it.value)
-                        val errorMsg = result.exceptionOrNull()?.message
-                        if (!errorMsg.isNullOrEmpty()) {
-                            snackBarState.showToast(errorMsg)
-                        } else {
-                            selectedWorkMode = WorkModeSegment.ofWorkMode(it.value)
-                        }
+                        snackBarState.checkShowToast(result)
                     }
                 }
             )

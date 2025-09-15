@@ -8,4 +8,8 @@ import kotlinx.coroutines.flow.Flow
  * Created date 2025/9/11 10:01
  * Describe : Dp
  */
-internal data class Dp<T>(val dpFlow: Flow<T>, val setDpValue: suspend (T) -> Result<Boolean>)
+internal data class Dp<T>(
+    val dpId: String,
+    val dpFlow: Flow<T>,
+    val setDpValue: suspend (T) -> Result<Boolean>
+)

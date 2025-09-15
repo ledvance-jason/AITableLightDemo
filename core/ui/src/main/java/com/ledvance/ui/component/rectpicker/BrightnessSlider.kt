@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -53,6 +54,7 @@ internal fun BrightnessSlider(
     onValueComplete: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     valueRange: IntRange = 1..100,
+    minValue: Int = 1,
     activeColor: Color = Color.White,
     trackColor: Color = Color(0xFF666666),
 ) {
@@ -63,15 +65,15 @@ internal fun BrightnessSlider(
         val sliderWidth = constraints.maxWidth.toFloat()
 
         var progress by remember { mutableFloatStateOf((value - valueRange.first).toFloat() / (valueRange.last - valueRange.first)) }
-
+        var percent by remember { mutableIntStateOf(value) }
         LaunchedEffect(value) {
             progress = (value - valueRange.first).toFloat() / (valueRange.last - valueRange.first)
+            percent = value
         }
 
         val activeWidth = progress * sliderWidth
         val activeWidthDp = activeWidth.toDp
 
-        val percent = (progress * 100).roundToInt().coerceIn(valueRange)
         val iconToShow = when {
             percent > 60 -> R.drawable.ic_brightness_3
             percent > 20 -> R.drawable.ic_brightness_2
@@ -86,20 +88,29 @@ internal fun BrightnessSlider(
                     },
                     onDragEnd = {
                         if (isDragging) {
-                            currentOnValueComplete.invoke((valueRange.first + progress * (valueRange.last - valueRange.first)).roundToInt())
+                            val value =
+                                (valueRange.first + progress * (valueRange.last - valueRange.first))
+                                    .roundToInt().coerceAtLeast(minValue)
+                            currentOnValueComplete.invoke(value)
+                            percent = value
                             isDragging = false
                         }
                     }, onDragCancel = {
                         if (isDragging) {
-                            currentOnValueComplete.invoke((valueRange.first + progress * (valueRange.last - valueRange.first)).roundToInt())
+                            val value =
+                                (valueRange.first + progress * (valueRange.last - valueRange.first))
+                                    .roundToInt().coerceAtLeast(minValue)
+                            currentOnValueComplete.invoke(value)
+                            percent = value
                             isDragging = false
                         }
                     }) { change, _ ->
                     val newRatio = (change.position.x / sliderWidth).coerceIn(0f, 1f)
                     progress = newRatio
-                    currentOnValueChange(
-                        (valueRange.first + newRatio * (valueRange.last - valueRange.first)).roundToInt()
-                    )
+                    val value = (valueRange.first + newRatio * (valueRange.last - valueRange.first))
+                        .roundToInt().coerceAtLeast(minValue)
+                    currentOnValueChange(value)
+                    percent = value
                     change.consume()
                 }
             }
@@ -109,8 +120,9 @@ internal fun BrightnessSlider(
                     progress = newRatio
                     val brightness =
                         (valueRange.first + newRatio * (valueRange.last - valueRange.first))
-                            .roundToInt().coerceIn(valueRange)
+                            .roundToInt().coerceIn(valueRange).coerceAtLeast(minValue)
                     currentOnValueChange(brightness)
+                    percent = brightness
                     awaitRelease()
                     currentOnValueComplete.invoke(brightness)
                 })

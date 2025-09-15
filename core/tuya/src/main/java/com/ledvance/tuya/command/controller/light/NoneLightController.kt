@@ -1,4 +1,4 @@
-package com.ledvance.tuya.command.light
+package com.ledvance.tuya.command.controller.light
 
 import com.ledvance.tuya.beans.CctBrightness
 import com.ledvance.tuya.beans.Hsv

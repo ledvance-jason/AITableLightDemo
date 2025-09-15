@@ -1,4 +1,4 @@
-package com.ledvance.tuya.command.light
+package com.ledvance.tuya.command.controller.light
 
 import com.ledvance.tuya.beans.CctBrightness
 import com.ledvance.tuya.beans.Hsv
@@ -73,6 +73,7 @@ internal class MatterLightController(device: DeviceBean) : BaseLightController(d
     }
 
     override suspend fun setHsv(hsv: Hsv): Result<Boolean> {
+        discardControlData()
         val (h, s, v) = hsv
         val newH = ValueConverter.convertRange(
             value = h,
@@ -98,8 +99,8 @@ internal class MatterLightController(device: DeviceBean) : BaseLightController(d
         val hHex = newH.toUByte().toByte().toHex()
         val sHex = newS.toUByte().toByte().toHex()
         Timber.tag(TAG).i("setHsv:$hHex$sHex h:$newH,s:$newS,v:$newV")
-        val hsResult = hsvDp.setDpValue("$hHex$sHex")
-        val vResult = brightnessDp.setDpValue(newV)
+        val hsResult = hsvDp.sendDp("$hHex$sHex")
+        val vResult = brightnessDp.sendDp(newV)
         if (hsResult.isSuccess && vResult.isSuccess) {
             return Result.success(true)
         }
@@ -107,6 +108,7 @@ internal class MatterLightController(device: DeviceBean) : BaseLightController(d
     }
 
     override suspend fun setCctBrightness(cctBrightness: CctBrightness): Result<Boolean> {
+        discardControlData()
         val (cct, brightness) = cctBrightness
         val newCct = ValueConverter.convertRange(
             value = ValueConverter.invertRange(cct, 0, 100),

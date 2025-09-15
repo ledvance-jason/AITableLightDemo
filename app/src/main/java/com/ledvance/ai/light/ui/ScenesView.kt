@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ interface ISceneItem {
 fun ScenesView(
     items: List<ISceneItem>,
     modifier: Modifier = Modifier,
+    selectedItem: ISceneItem? = null,
     title: String? = null,
     maxItemsInEachRow: Int = 3,
     onItemClick: (ISceneItem) -> Unit
@@ -54,12 +56,13 @@ fun ScenesView(
         }
         FlowRow(
             maxItemsInEachRow = maxItemsInEachRow,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             items.forEach {
                 ScenesItem(
                     scenes = it,
+                    isSelected = selectedItem?.id == it.id,
                     modifier = Modifier
                         .weight(1f),
                     onItemClick = onItemClick
@@ -78,6 +81,7 @@ fun ScenesView(
 @Composable
 private fun ScenesItem(
     scenes: ISceneItem,
+    isSelected: Boolean,
     modifier: Modifier = Modifier,
     onItemClick: (ISceneItem) -> Unit
 ) {
@@ -86,12 +90,12 @@ private fun ScenesItem(
             .height(48.dp)
             .then(modifier)
             .background(
-                color = AppTheme.colors.screenBackground,
+                color = if (isSelected) Color(0xFFFFF4E5) else AppTheme.colors.screenBackground,
                 shape = RoundedCornerShape(10.dp)
             )
             .border(
                 width = 1.dp,
-                color = AppTheme.colors.border,
+                color = if (isSelected) Color(0xFFFF7A00) else AppTheme.colors.border,
                 shape = RoundedCornerShape(10.dp)
             )
             .clip(RoundedCornerShape(10.dp))
@@ -105,12 +109,12 @@ private fun ScenesItem(
             contentDescription = scenes.title,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
-                .padding(start = 10.dp, top = 5.dp)
+                .padding(start = 6.dp, top = 5.dp)
                 .width(24.dp)
         )
         Text(
             text = scenes.title,
-            color = AppTheme.colors.title,
+            color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.title,
             style = AppTheme.typography.bodyMedium,
             modifier = Modifier.padding(start = 5.dp)
         )

@@ -29,6 +29,7 @@ import com.ledvance.ui.theme.AppTheme
  */
 interface IFlowRowSectionItem {
     val title: String
+    val id: Int
 }
 
 @Composable

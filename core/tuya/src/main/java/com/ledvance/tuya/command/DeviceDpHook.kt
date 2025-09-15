@@ -64,11 +64,17 @@ internal class DeviceDpHook(
         }
     }
 
+    fun getDp(dpId: String): Any? {
+        return deviceDpsFlow.value[dpId]
+    }
+
     fun <T> useDp(dp: DeviceDp?, defaultValue: T? = null): Dp<T> {
         Timber.tag(TAG).i("useDp(${device.devId}): dp->$dp, defaultValue->$defaultValue")
         if (dp == null) {
             val emptyFlow = flowOf(defaultValue).filterNotNull()
-            return Dp(emptyFlow, { Result.failure(Throwable("Dp is null")) })
+            return Dp("", emptyFlow) {
+                Result.failure(Throwable("Dp is null"))
+            }
         }
 
         val dpId = dp.dpId.toString()
@@ -92,7 +98,7 @@ internal class DeviceDpHook(
             }
             result
         }
-        return Dp(dpFlow, setDpValue)
+        return Dp(dpId, dpFlow, setDpValue)
     }
 
     fun release() {

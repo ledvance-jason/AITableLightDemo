@@ -1,6 +1,5 @@
 package com.ledvance.tuya.command.light
 
-import com.ledvance.tuya.ktx.isTuyaLighting
 import com.thingclips.smart.home.sdk.ThingHomeSdk
 
 /**
@@ -14,7 +13,7 @@ class LightControllerFactory {
         fun createController(devId: String): ILightController {
             val device = ThingHomeSdk.getDataInstance().getDeviceBean(devId)
             return when {
-                device == null || !device.isTuyaLighting() -> NoneLightController()
+                device == null -> NoneLightController()
                 device.isMatter -> MatterLightController(device)
                 else -> WifiLightController(device)
             }

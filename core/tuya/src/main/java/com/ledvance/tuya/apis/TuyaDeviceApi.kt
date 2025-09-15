@@ -1,5 +1,6 @@
 package com.ledvance.tuya.apis
 
+import com.alibaba.fastjson2.JSONObject
 import com.ledvance.tuya.apis.domain.ITuyaDeviceApi
 import com.ledvance.tuya.ktx.isTuyaLinkDevice
 import com.ledvance.utils.extensions.toJson
@@ -14,7 +15,6 @@ import com.thingclips.smart.sdk.bean.ThingSmartThingModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton

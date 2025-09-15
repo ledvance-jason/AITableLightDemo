@@ -1,11 +1,11 @@
 package com.ledvance.tuya.command
 
+import com.alibaba.fastjson2.JSONObject
 import com.ledvance.tuya.command.dps.DeviceDp
 import com.ledvance.tuya.ktx.getDeviceSwitchDp
 import com.ledvance.tuya.ktx.isTuyaLinkDevice
 import com.ledvance.utils.extensions.tryCatchReturn
 import com.thingclips.smart.sdk.bean.DeviceBean
-import org.json.JSONObject
 
 /**
  * @author : jason yin

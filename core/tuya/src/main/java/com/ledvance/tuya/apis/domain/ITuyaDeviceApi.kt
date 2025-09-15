@@ -1,7 +1,7 @@
 package com.ledvance.tuya.apis.domain
 
+import com.alibaba.fastjson2.JSONObject
 import com.thingclips.smart.sdk.bean.DeviceBean
-import org.json.JSONObject
 
 /**
  * @author : jason yin

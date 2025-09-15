@@ -77,8 +77,6 @@ fun HomeScreen(
 
     LedvanceScreen(
         title = "Home",
-        enableTitleActionIcon = true,
-        actionIconPainter = painterResource(R.drawable.ic_add),
         onActionPressed = {
             onGotoAddDevices.invoke()
         }

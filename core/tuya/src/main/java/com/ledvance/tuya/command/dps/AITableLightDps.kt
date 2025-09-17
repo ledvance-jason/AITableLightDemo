@@ -10,6 +10,6 @@ object AITableLightDps {
     val VolumeDp = DeviceDp(dpId = 107, code = "volume_set")
     val CustomActionDp = DeviceDp(dpId = 108, code = "custom_action")
     val LightEffectDp = DeviceDp(dpId = 109, code = "light_effect")
-    val ScenesDp = DeviceDp(dpId = 110, code = "scene")
+    val SceneDp = DeviceDp(dpId = 110, code = "scene")
     val ModeDp = DeviceDp(dpId = 111, code = "arm_mode")
 }

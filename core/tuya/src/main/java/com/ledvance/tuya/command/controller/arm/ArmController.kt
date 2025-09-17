@@ -1,11 +1,17 @@
 package com.ledvance.tuya.command.controller.arm
 
 import com.ledvance.tuya.beans.ArmCustomAction
-import com.ledvance.tuya.beans.ArmLightEffect
+import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
-import com.ledvance.tuya.beans.ArmScene
+import com.ledvance.tuya.beans.ArmSceneData
+import com.ledvance.tuya.beans.SceneStruct
+import com.ledvance.tuya.beans.toLightEffect
+import com.ledvance.tuya.beans.toScene
+import com.ledvance.tuya.beans.toSceneStruct
 import com.ledvance.tuya.command.controller.BaseController
 import com.ledvance.tuya.command.dps.AITableLightDps
+import com.ledvance.utils.extensions.jsonAsOrNull
+import com.ledvance.utils.extensions.toJson
 import com.thingclips.smart.sdk.bean.DeviceBean
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,8 +25,8 @@ import kotlinx.coroutines.flow.map
 internal class ArmController(device: DeviceBean) : BaseController(device), IArmController {
     private val volumeDp = deviceDpHook.useDp<Int>(AITableLightDps.VolumeDp)
     private val customActionDp = deviceDpHook.useDp<Int>(AITableLightDps.CustomActionDp)
-    private val lightEffectDp = deviceDpHook.useDp<Int>(AITableLightDps.LightEffectDp)
-    private val sceneDp = deviceDpHook.useDp<Int>(AITableLightDps.ScenesDp)
+    private val lightEffectDp = deviceDpHook.useDp(AITableLightDps.LightEffectDp, "")
+    private val sceneDp = deviceDpHook.useDp(AITableLightDps.SceneDp, "")
     private val modeDp = deviceDpHook.useDp<Int>(AITableLightDps.ModeDp)
 
     override fun getVolumeFlow(): Flow<Int> {
@@ -35,20 +41,24 @@ internal class ArmController(device: DeviceBean) : BaseController(device), IArmC
         return customActionDp.setDpValue(action.value)
     }
 
-    override fun getLightEffectFlow(): Flow<ArmLightEffect> {
-        return lightEffectDp.dpFlow.map { ArmLightEffect.of(it) }
+    override fun getLightEffectFlow(): Flow<ArmLightEffectData?> {
+        return lightEffectDp.dpFlow.map {
+            it.jsonAsOrNull<SceneStruct>()?.toLightEffect()
+        }
     }
 
-    override suspend fun setLightEffect(lightEffect: ArmLightEffect): Result<Boolean> {
-        return lightEffectDp.setDpValue(lightEffect.value)
+    override suspend fun setLightEffect(lightEffectData: ArmLightEffectData): Result<Boolean> {
+        return lightEffectDp.setDpValue(lightEffectData.toSceneStruct().toJson() ?: "{}")
     }
 
-    override fun getSceneFlow(): Flow<ArmScene> {
-        return sceneDp.dpFlow.map { ArmScene.of(it) }
+    override fun getSceneFlow(): Flow<ArmSceneData?> {
+        return sceneDp.dpFlow.map {
+            it.jsonAsOrNull<SceneStruct>()?.toScene()
+        }
     }
 
-    override suspend fun setScene(scene: ArmScene): Result<Boolean> {
-        return sceneDp.setDpValue(scene.value)
+    override suspend fun setScene(sceneData: ArmSceneData): Result<Boolean> {
+        return sceneDp.setDpValue(sceneData.toSceneStruct().toJson() ?: "{}")
     }
 
     override fun getModeFlow(): Flow<ArmMode> {

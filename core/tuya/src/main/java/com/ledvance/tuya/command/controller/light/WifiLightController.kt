@@ -24,6 +24,9 @@ internal class WifiLightController(device: DeviceBean) : BaseLightController(dev
 
     override fun getHsvFlow(): Flow<Hsv> {
         return hsvDp.dpFlow.map { hsv ->
+            if (hsv.isEmpty()) {
+                return@map Hsv(0, 0, 1)
+            }
             val hsByteArray = hsv.toByteArray()
             val h = tryCatchReturn { hsByteArray[0].toIntValue() } ?: 0
             val s = tryCatchReturn { hsByteArray[1].toIntValue() } ?: 0

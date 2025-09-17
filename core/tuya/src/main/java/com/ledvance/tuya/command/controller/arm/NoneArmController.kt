@@ -1,9 +1,9 @@
 package com.ledvance.tuya.command.controller.arm
 
 import com.ledvance.tuya.beans.ArmCustomAction
-import com.ledvance.tuya.beans.ArmLightEffect
+import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
-import com.ledvance.tuya.beans.ArmScene
+import com.ledvance.tuya.beans.ArmSceneData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -26,19 +26,19 @@ class NoneArmController : IArmController {
         return Result.success(true)
     }
 
-    override fun getLightEffectFlow(): Flow<ArmLightEffect> {
+    override fun getLightEffectFlow(): Flow<ArmLightEffectData?> {
         return flow { }
     }
 
-    override suspend fun setLightEffect(lightEffect: ArmLightEffect): Result<Boolean> {
+    override suspend fun setLightEffect(lightEffectData: ArmLightEffectData): Result<Boolean> {
         return Result.success(true)
     }
 
-    override fun getSceneFlow(): Flow<ArmScene> {
+    override fun getSceneFlow(): Flow<ArmSceneData?> {
         return flow { }
     }
 
-    override suspend fun setScene(scene: ArmScene): Result<Boolean> {
+    override suspend fun setScene(sceneData: ArmSceneData): Result<Boolean> {
         return Result.success(true)
     }
 

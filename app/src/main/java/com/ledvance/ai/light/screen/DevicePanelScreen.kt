@@ -111,10 +111,12 @@ private fun ArmControl(
     val scope = rememberCoroutineScope()
     val armUIState by viewModel.armUIStateFlow.collectAsStateWithLifecycle()
     val selectedScene by rememberUpdatedState(Scene.allScenes.find {
-        it.id == armUIState.scene.value
+        val (scene, enable) = armUIState.sceneData ?: return@find false
+        it.id == scene.value && enable
     })
-    val selectedLightEffect by rememberUpdatedState(Scene.allScenes.find {
-        it.id == armUIState.lightEffect.value
+    val selectedLightEffect by rememberUpdatedState(Scene.lightEffect.find {
+        val (lightEffect, enable) = armUIState.lightEffectData ?: return@find false
+        it.id == lightEffect.value && enable
     })
     var volume by remember { mutableIntStateOf(armUIState.volume) }
     LaunchedEffect(armUIState.volume) {

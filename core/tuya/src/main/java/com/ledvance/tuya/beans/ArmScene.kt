@@ -7,7 +7,7 @@ package com.ledvance.tuya.beans
  * Describe : ArmScene
  */
 enum class ArmScene(val value: Int) {
-    Exit(0x00),
+    Unknown(0x00),
     Romantic(0x01),
     Reading(0x02),
     Relax(0x03),
@@ -17,7 +17,7 @@ enum class ArmScene(val value: Int) {
 
     companion object {
         fun of(value: Int): ArmScene {
-            return entries.find { it.value == value } ?: Exit
+            return entries.find { it.value == value } ?: Unknown
         }
     }
 }

@@ -7,14 +7,14 @@ package com.ledvance.tuya.beans
  * Describe : ArmLightEffect
  */
 enum class ArmLightEffect(val value: Int) {
-    Exit(0x00),
+    Unknown(0x00),
     EyeCare(0x01),
     ColorMood(0x02),
     FocusReminder(0x05), ;
 
     companion object {
         fun of(value: Int): ArmLightEffect {
-            return entries.find { it.value == value } ?: Exit
+            return entries.find { it.value == value } ?: Unknown
         }
     }
 }

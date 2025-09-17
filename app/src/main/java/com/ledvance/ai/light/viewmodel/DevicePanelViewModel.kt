@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.tuya.beans.ArmLightEffect
+import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
 import com.ledvance.tuya.beans.ArmScene
+import com.ledvance.tuya.beans.ArmSceneData
 import com.ledvance.tuya.beans.CctBrightness
 import com.ledvance.tuya.beans.Hsv
 import com.ledvance.tuya.beans.WorkMode
@@ -56,9 +58,9 @@ class DevicePanelViewModel @AssistedInject constructor(
     )
 
     val armUIStateFlow: StateFlow<ArmUIState> = combine(
+        armController.getSceneFlow(), armController.getLightEffectFlow(),
         armController.getVolumeFlow(), armController.getModeFlow(),
-        armController.getSceneFlow(), armController.getLightEffectFlow()
-    ) { volume, mode, scene, lightEffect ->
+    ) { scene, lightEffect, volume, mode ->
         ArmUIState(mode, scene, lightEffect, volume)
     }.stateIn(
         scope = viewModelScope,
@@ -122,20 +124,24 @@ class DevicePanelViewModel @AssistedInject constructor(
 
     suspend fun setScene(sceneId: Int): Result<Boolean> {
         _uiStateFlow.update { it.copy(loading = true) }
-        val scene = if (sceneId == armUIStateFlow.value.scene.value) {
-            ArmScene.Exit
-        } else ArmScene.of(sceneId)
-        val result = armController.setScene(scene)
+        val sceneData = armUIStateFlow.value.sceneData
+        val enable = if (sceneData?.scene?.value == sceneId) {
+            sceneData.enable.not()
+        } else true
+        val scene = ArmScene.of(sceneId)
+        val result = armController.setScene(ArmSceneData(scene, enable))
         _uiStateFlow.update { it.copy(loading = false) }
         return result
     }
 
     suspend fun setLightEffect(id: Int): Result<Boolean> {
         _uiStateFlow.update { it.copy(loading = true) }
-        val lightEffect = if (id == armUIStateFlow.value.lightEffect.value) {
-            ArmLightEffect.Exit
-        } else ArmLightEffect.of(id)
-        val result = armController.setLightEffect(lightEffect)
+        val lightEffectData = armUIStateFlow.value.lightEffectData
+        val enable = if (lightEffectData?.lightEffect?.value == id) {
+            lightEffectData.enable.not()
+        } else true
+        val lightEffect = ArmLightEffect.of(id)
+        val result = armController.setLightEffect(ArmLightEffectData(lightEffect, enable))
         _uiStateFlow.update { it.copy(loading = false) }
         return result
     }
@@ -165,8 +171,8 @@ class DevicePanelViewModel @AssistedInject constructor(
 
     data class ArmUIState(
         val mode: ArmMode = ArmMode.Daily,
-        val scene: ArmScene = ArmScene.Exit,
-        val lightEffect: ArmLightEffect = ArmLightEffect.Exit,
+        val sceneData: ArmSceneData? = null,
+        val lightEffectData: ArmLightEffectData? = null,
         val volume: Int = 100
     )
 

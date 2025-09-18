@@ -2,9 +2,10 @@ package com.ledvance.tuya.command.controller.light
 
 import com.ledvance.tuya.beans.CctBrightness
 import com.ledvance.tuya.beans.Hsv
+import com.ledvance.tuya.ktx.subArray
 import com.ledvance.tuya.ktx.toByteArray
 import com.ledvance.tuya.ktx.toHex
-import com.ledvance.tuya.ktx.toIntValue
+import com.ledvance.tuya.ktx.toIntBigEndian
 import com.ledvance.tuya.utils.ValueConverter
 import com.ledvance.utils.extensions.tryCatchReturn
 import com.thingclips.smart.sdk.bean.DeviceBean
@@ -28,9 +29,9 @@ internal class WifiLightController(device: DeviceBean) : BaseLightController(dev
                 return@map Hsv(0, 0, 1)
             }
             val hsByteArray = hsv.toByteArray()
-            val h = tryCatchReturn { hsByteArray[0].toIntValue() } ?: 0
-            val s = tryCatchReturn { hsByteArray[1].toIntValue() } ?: 0
-            val v = tryCatchReturn { hsByteArray[2].toIntValue() } ?: 1
+            val h = tryCatchReturn { hsByteArray.subArray(0,1).toIntBigEndian() } ?: 0
+            val s = tryCatchReturn { hsByteArray.subArray(2,3).toIntBigEndian() } ?: 0
+            val v = tryCatchReturn { hsByteArray.subArray(4,5).toIntBigEndian() } ?: 1
             val newS = ValueConverter.convertRange(
                 value = s,
                 inMin = 0,

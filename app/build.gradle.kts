@@ -17,6 +17,9 @@ android {
         versionCode = providers.gradleProperty("versionCode").orNull?.toIntOrNull() ?: 0
         versionName = providers.gradleProperty("versionName").orNull ?: ""
         setProperty("archivesBaseName", "LdvAITableLight-$versionName[$versionCode]_${getDate()}")
+        val buildTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            .format(LocalDateTime.now())
+        buildConfigField("String", "BUILD_TIME", "\"${buildTime}\"")
         androidResources {
             val language = listOf("en")
             localeFilters.addAll(language)

@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ledvance.ai.light.viewmodel.LoginViewModel
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceScreen

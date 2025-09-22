@@ -51,6 +51,8 @@
 -keep class com.tencent.mars.**{
     public protected private *;
 }
+-keep class com.ledvance.ai.light.model.** { *; }
+-keep class com.ledvance.tuya.beans.** { *; }
 
 -dontwarn com.aliyun.odps.io.Writable
 -dontwarn com.aliyun.odps.udf.UDF

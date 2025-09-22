@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * @author : jason yin
@@ -37,6 +38,7 @@ class DevicePanelViewModel @AssistedInject constructor(
     @Assisted private val devId: String,
     private val tuyaRepo: ITuyaRepo,
 ) : ViewModel() {
+    private val TAG = "DevicePanelViewModel"
     private val lightController by lazy {
         LightControllerFactory.createController(devId)
     }
@@ -67,6 +69,12 @@ class DevicePanelViewModel @AssistedInject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ArmUIState()
     )
+
+    init {
+        val device = tuyaRepo.getDeviceApi().getDevice(devId)
+        val dpCodes = device?.productBean?.schemaInfo?.dpCodeSchemaMap?.map { it.key }
+        Timber.tag(TAG).i("device($devId) dpCodes: ${dpCodes?.joinToString(",")}")
+    }
 
     suspend fun delete(): Boolean {
         _uiStateFlow.update { it.copy(loading = true) }

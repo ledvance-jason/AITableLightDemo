@@ -35,6 +35,7 @@ import com.ledvance.ai.light.model.WorkModeSegment
 import com.ledvance.ai.light.ui.FlowRowSection
 import com.ledvance.ai.light.ui.ModeView
 import com.ledvance.ai.light.ui.ScenesView
+import com.ledvance.ai.light.utils.DataStoreKeys
 import com.ledvance.ai.light.viewmodel.DevicePanelViewModel
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceRadioGroup
@@ -48,6 +49,8 @@ import com.ledvance.ui.component.workmode.ColorModePicker
 import com.ledvance.ui.component.workmode.WhiteModePicker
 import com.ledvance.ui.extensions.clipWithBorder
 import com.ledvance.ui.theme.AppTheme
+import com.ledvance.utils.extensions.getBoolean
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -66,6 +69,9 @@ fun DevicePanelScreen(
     }
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val enableDeviceDeleteButton by DataStoreKeys.enableDeviceDeleteButton.getBoolean()
+        .map { it ?: false }
+        .collectAsStateWithLifecycle(false)
     val scope = rememberCoroutineScope()
     val snackBarState = rememberSnackBarState()
     val state = rememberScrollState()
@@ -87,14 +93,16 @@ fun DevicePanelScreen(
             LightingControl(viewModel = viewModel, snackBarState = snackBarState)
             ArmControl(viewModel = viewModel, snackBarState = snackBarState)
 
-            LedvanceButton(
-                text = "Delete",
-                modifier = Modifier.padding(top = 20.dp),
-                containerColor = AppTheme.colors.buttonGreyBackground
-            ) {
-                scope.launch {
-                    if (viewModel.delete()) {
-                        onBackPressed.invoke()
+            if (enableDeviceDeleteButton) {
+                LedvanceButton(
+                    text = "Delete",
+                    modifier = Modifier.padding(top = 20.dp),
+                    containerColor = AppTheme.colors.buttonGreyBackground
+                ) {
+                    scope.launch {
+                        if (viewModel.delete()) {
+                            onBackPressed.invoke()
+                        }
                     }
                 }
             }

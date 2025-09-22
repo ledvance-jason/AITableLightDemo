@@ -1,5 +1,6 @@
 package com.ledvance.ai.light.utils
 
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 
 /**
@@ -10,4 +11,5 @@ import androidx.datastore.preferences.core.intPreferencesKey
  */
 object DataStoreKeys {
     val darkThemeMode = intPreferencesKey("dark_theme_mode")
+    val enableDeviceDeleteButton = booleanPreferencesKey("enableDeviceDeleteButton")
 }

@@ -1,6 +1,7 @@
 package com.ledvance.ai.light.screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,16 +29,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ledvance.ai.light.model.CustomAction
 import com.ledvance.ai.light.model.Mode
 import com.ledvance.ai.light.model.Scene
 import com.ledvance.ai.light.model.WorkModeSegment
-import com.ledvance.ai.light.ui.FlowRowSection
 import com.ledvance.ai.light.ui.ModeView
 import com.ledvance.ai.light.ui.ScenesView
 import com.ledvance.ai.light.utils.DataStoreKeys
 import com.ledvance.ai.light.viewmodel.DevicePanelViewModel
 import com.ledvance.ui.component.LedvanceButton
+import com.ledvance.ui.component.LedvancePopupDropdown
 import com.ledvance.ui.component.LedvanceRadioGroup
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LedvanceSlider
@@ -126,6 +126,13 @@ private fun ArmControl(
         val (lightEffect, enable) = armUIState.lightEffectData ?: return@find false
         it.id == lightEffect.value && enable
     })
+    val customActionList = remember { viewModel.customActionList }
+    var selectCustomAction by remember(armUIState.customActionName) {
+        mutableStateOf(customActionList.find {
+            it == armUIState.customActionName
+        } ?: customActionList.first())
+    }
+
     var volume by remember { mutableIntStateOf(armUIState.volume) }
     LaunchedEffect(armUIState.volume) {
         volume = armUIState.volume
@@ -167,17 +174,34 @@ private fun ArmControl(
         }
     }
 
-    FlowRowSection(
-        items = CustomAction.allActions,
-        title = "Custom Actions",
-        modifier = Modifier.padding(top = 20.dp),
-        onItemClick = {
+    Text(
+        text = "Custom Actions",
+        color = AppTheme.colors.title,
+        style = AppTheme.typography.titleMedium,
+        modifier = Modifier.padding(vertical = 15.dp)
+    )
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        LedvancePopupDropdown(
+            selectedItem = selectCustomAction,
+            items = customActionList,
+            modifier = Modifier.weight(2f),
+            itemTitle = { it },
+            onItemSelected = {
+                selectCustomAction = it
+            })
+        LedvanceButton(
+            text = "Perform",
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .weight(1f),
+            contentPadding = PaddingValues(0.dp),
+        ) {
             scope.launch {
-                val result = viewModel.setCustomAction(it.id)
+                val result = viewModel.setCustomAction(selectCustomAction)
                 snackBarState.checkShowToast(result)
             }
         }
-    )
+    }
 
     Text(
         text = "Volume",

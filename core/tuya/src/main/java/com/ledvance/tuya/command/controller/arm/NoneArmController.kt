@@ -1,6 +1,5 @@
 package com.ledvance.tuya.command.controller.arm
 
-import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
 import com.ledvance.tuya.beans.ArmSceneData
@@ -22,8 +21,12 @@ class NoneArmController : IArmController {
         return Result.success(true)
     }
 
-    override suspend fun setCustomAction(action: ArmCustomAction): Result<Boolean> {
+    override suspend fun setCustomAction(actionName: String): Result<Boolean> {
         return Result.success(true)
+    }
+
+    override fun getCustomAction(): Flow<String> {
+        return flow { }
     }
 
     override fun getLightEffectFlow(): Flow<ArmLightEffectData?> {

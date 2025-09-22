@@ -62,12 +62,31 @@ class DevicePanelViewModel @AssistedInject constructor(
     val armUIStateFlow: StateFlow<ArmUIState> = combine(
         armController.getSceneFlow(), armController.getLightEffectFlow(),
         armController.getVolumeFlow(), armController.getModeFlow(),
-    ) { scene, lightEffect, volume, mode ->
-        ArmUIState(mode, scene, lightEffect, volume)
+        armController.getCustomAction()
+    ) { scene, lightEffect, volume, mode, customActionName ->
+        ArmUIState(mode, scene, lightEffect, volume, customActionName)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ArmUIState()
+    )
+
+    val customActionList = listOf(
+        "cengceng",
+        "daiji",
+        "diantou",
+        "huanxing",
+        "jingkong",
+        "kaiji",
+        "kaixin",
+        "qingxv",
+        "shengqi",
+        "shiluo",
+        "shoubu",
+        "wudao01",
+        "wudao02",
+        "xuexi",
+        "yangtou"
     )
 
     init {
@@ -154,9 +173,9 @@ class DevicePanelViewModel @AssistedInject constructor(
         return result
     }
 
-    suspend fun setCustomAction(actionId: Int): Result<Boolean> {
+    suspend fun setCustomAction(actionName: String): Result<Boolean> {
         _uiStateFlow.update { it.copy(loading = true) }
-        val result = armController.setCustomAction(ArmCustomAction.of(actionId))
+        val result = armController.setCustomAction(actionName)
         _uiStateFlow.update { it.copy(loading = false) }
         return result
     }
@@ -181,7 +200,8 @@ class DevicePanelViewModel @AssistedInject constructor(
         val mode: ArmMode = ArmMode.Daily,
         val sceneData: ArmSceneData? = null,
         val lightEffectData: ArmLightEffectData? = null,
-        val volume: Int = 100
+        val volume: Int = 100,
+        val customActionName: String = ""
     )
 
     @AssistedFactory

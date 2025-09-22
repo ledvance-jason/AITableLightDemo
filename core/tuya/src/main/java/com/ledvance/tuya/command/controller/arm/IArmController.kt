@@ -1,6 +1,5 @@
 package com.ledvance.tuya.command.controller.arm
 
-import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
 import com.ledvance.tuya.beans.ArmSceneData
@@ -15,7 +14,8 @@ import kotlinx.coroutines.flow.Flow
 interface IArmController {
     fun getVolumeFlow(): Flow<Int>
     suspend fun setVolume(value: Int): Result<Boolean>
-    suspend fun setCustomAction(action: ArmCustomAction): Result<Boolean>
+    suspend fun setCustomAction(actionName: String): Result<Boolean>
+    fun getCustomAction(): Flow<String>
     fun getLightEffectFlow(): Flow<ArmLightEffectData?>
     suspend fun setLightEffect(lightEffectData: ArmLightEffectData): Result<Boolean>
     fun getSceneFlow(): Flow<ArmSceneData?>

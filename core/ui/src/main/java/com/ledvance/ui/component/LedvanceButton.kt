@@ -1,6 +1,7 @@
 package com.ledvance.ui.component
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ fun LedvanceButton(
     modifier: Modifier = Modifier,
     containerColor: Color = AppTheme.colors.buttonBackground,
     contentColor: Color = AppTheme.colors.buttonContent,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     onClick: () -> Unit
 ) {
     Box(
@@ -37,6 +39,7 @@ fun LedvanceButton(
         Button(
             modifier = Modifier.fillMaxSize(),
             onClick = onClick,
+            contentPadding = contentPadding,
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.filledTonalButtonColors(
                 containerColor = containerColor,

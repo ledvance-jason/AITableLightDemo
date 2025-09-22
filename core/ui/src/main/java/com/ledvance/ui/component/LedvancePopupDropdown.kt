@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,11 +54,11 @@ private const val TAG = "LedvancePopupDropdown"
 
 @Composable
 fun <T> LedvancePopupDropdown(
-    title: String,
     selectedItem: T,
     items: List<T>,
     modifier: Modifier = Modifier,
     onItemSelected: (T) -> Unit,
+    title: String? = null,
     itemTitle: @Composable (T) -> String,
     itemEquals: (T, T) -> Boolean = { a, b -> a == b }
 ) {
@@ -73,18 +76,18 @@ fun <T> LedvancePopupDropdown(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = title,
-            style = AppTheme.typography.bodySmall,
-            color = AppTheme.colors.title,
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 40.dp)
-        )
+        if (!title.isNullOrEmpty()) {
+            Text(
+                text = title,
+                color = AppTheme.colors.title,
+                style = AppTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 15.dp)
+            )
+        }
         Row(
             modifier = Modifier
-                .width(155.dp)
-                .height(30.dp)
+                .fillMaxWidth()
+                .height(48.dp)
                 .then(
                     if (expanded) Modifier.border(
                         width = 1.dp,
@@ -110,7 +113,7 @@ fun <T> LedvancePopupDropdown(
         ) {
             Text(
                 text = itemTitle(selectedItem),
-                style = AppTheme.typography.bodySmall,
+                style = AppTheme.typography.bodyMedium,
                 maxLines = 1,
                 color = AppTheme.colors.textFieldContent,
                 overflow = TextOverflow.Ellipsis,
@@ -148,17 +151,19 @@ fun <T> LedvancePopupDropdown(
                 shadowElevation = 8.dp,
                 modifier = Modifier
                     .width(anchorSize.value.width.toDp())
+                    .heightIn(max = 300.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(AppTheme.colors.popupBackground)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     items.forEach { item ->
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(30.dp)
+                                .height(48.dp)
                                 .background(
                                     color = if (itemEquals(item, selectedItem)) {
                                         AppTheme.colors.popupSecondaryBackground
@@ -174,7 +179,7 @@ fun <T> LedvancePopupDropdown(
                         ) {
                             Text(
                                 text = itemTitle(item),
-                                style = AppTheme.typography.bodySmall,
+                                style = AppTheme.typography.bodyMedium,
                                 color = AppTheme.colors.textFieldContent,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis

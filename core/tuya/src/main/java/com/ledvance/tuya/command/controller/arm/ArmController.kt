@@ -1,6 +1,5 @@
 package com.ledvance.tuya.command.controller.arm
 
-import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
 import com.ledvance.tuya.beans.ArmSceneData
@@ -24,7 +23,7 @@ import kotlinx.coroutines.flow.map
  */
 internal class ArmController(device: DeviceBean) : BaseController(device), IArmController {
     private val volumeDp = deviceDpHook.useDp<Int>(AITableLightDps.VolumeDp)
-    private val customActionDp = deviceDpHook.useDp<Int>(AITableLightDps.CustomActionDp)
+    private val customActionDp = deviceDpHook.useDp(AITableLightDps.CustomActionDp,"")
     private val lightEffectDp = deviceDpHook.useDp(AITableLightDps.LightEffectDp, "")
     private val sceneDp = deviceDpHook.useDp(AITableLightDps.SceneDp, "")
     private val modeDp = deviceDpHook.useDp<Int>(AITableLightDps.ModeDp)
@@ -37,8 +36,14 @@ internal class ArmController(device: DeviceBean) : BaseController(device), IArmC
         return volumeDp.sendDp(value)
     }
 
-    override suspend fun setCustomAction(action: ArmCustomAction): Result<Boolean> {
-        return customActionDp.setDpValue(action.value)
+    override suspend fun setCustomAction(actionName: String): Result<Boolean> {
+        return customActionDp.setDpValue(actionName)
+    }
+
+    override fun getCustomAction(): Flow<String> {
+        return customActionDp.dpFlow.map {
+            it
+        }
     }
 
     override fun getLightEffectFlow(): Flow<ArmLightEffectData?> {

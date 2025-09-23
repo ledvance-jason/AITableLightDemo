@@ -92,12 +92,12 @@ fun <T> LedvancePopupDropdown(
                     if (expanded) Modifier.border(
                         width = 1.dp,
                         brush = AppTheme.colors.buttonBorderBrush,
-                        shape = RoundedCornerShape(4.dp)
+                        shape = RoundedCornerShape(10.dp)
                     )
                     else Modifier.border(
                         width = 1.toDp(),
                         color = AppTheme.colors.textFieldBorder,
-                        shape = RoundedCornerShape(4.dp)
+                        shape = RoundedCornerShape(10.dp)
                     )
                 )
                 .onGloballyPositioned { coordinates ->

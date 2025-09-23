@@ -2,7 +2,6 @@ package com.ledvance.ai.light.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.tuya.beans.ArmLightEffect
 import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -95,7 +93,7 @@ class DevicePanelViewModel @AssistedInject constructor(
         Timber.tag(TAG).i("device($devId) dpCodes: ${dpCodes?.joinToString(",")}")
     }
 
-    suspend fun delete(): Boolean {
+    suspend fun delete(): Result<Boolean> {
         _uiStateFlow.update { it.copy(loading = true) }
         val result = tuyaRepo.getDeviceApi().deleteDevice(devId = devId, isReset = true)
         _uiStateFlow.update { it.copy(loading = false) }
@@ -124,22 +122,25 @@ class DevicePanelViewModel @AssistedInject constructor(
         lightController.controlData(cctBrightness = CctBrightness(cct, brightness))
     }
 
-    fun setHsv(h: Int, s: Int, v: Int) {
-        viewModelScope.launch {
-            lightController.setHsv(Hsv(h, s, v))
-        }
+    suspend fun setHsv(h: Int, s: Int, v: Int): Result<Boolean> {
+//        _uiStateFlow.update { it.copy(loading = true) }
+        val result = lightController.setHsv(Hsv(h, s, v))
+//        _uiStateFlow.update { it.copy(loading = false) }
+        return result
     }
 
-    fun setCctBrightness(cct: Int, brightness: Int) {
-        viewModelScope.launch {
-            lightController.setCctBrightness(CctBrightness(cct, brightness))
-        }
+    suspend fun setCctBrightness(cct: Int, brightness: Int): Result<Boolean> {
+//        _uiStateFlow.update { it.copy(loading = true) }
+        val result = lightController.setCctBrightness(CctBrightness(cct, brightness))
+//        _uiStateFlow.update { it.copy(loading = false) }
+        return result
     }
 
-    fun setVolume(volume: Int) {
-        viewModelScope.launch {
-            armController.setVolume(volume)
-        }
+    suspend fun setVolume(volume: Int): Result<Boolean> {
+        _uiStateFlow.update { it.copy(loading = true) }
+        val result = armController.setVolume(volume)
+        _uiStateFlow.update { it.copy(loading = false) }
+        return result
     }
 
     suspend fun setMode(modeId: Int): Result<Boolean> {

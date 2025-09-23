@@ -15,9 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,6 +32,7 @@ import com.ledvance.ai.light.model.Scene
 import com.ledvance.ai.light.model.WorkModeSegment
 import com.ledvance.ai.light.ui.ModeView
 import com.ledvance.ai.light.ui.ScenesView
+import com.ledvance.ai.light.utils.Constants
 import com.ledvance.ai.light.utils.DataStoreKeys
 import com.ledvance.ai.light.viewmodel.DevicePanelViewModel
 import com.ledvance.ui.component.LedvanceButton
@@ -48,6 +47,7 @@ import com.ledvance.ui.component.rememberSnackBarState
 import com.ledvance.ui.component.workmode.ColorModePicker
 import com.ledvance.ui.component.workmode.WhiteModePicker
 import com.ledvance.ui.extensions.clipWithBorder
+import com.ledvance.ui.extensions.rememberSyncedState
 import com.ledvance.ui.theme.AppTheme
 import com.ledvance.utils.extensions.getBoolean
 import kotlinx.coroutines.flow.map
@@ -100,8 +100,12 @@ fun DevicePanelScreen(
                     containerColor = AppTheme.colors.buttonGreyBackground
                 ) {
                     scope.launch {
-                        if (viewModel.delete()) {
-                            onBackPressed.invoke()
+                        scope.launch {
+                            val result = viewModel.delete()
+                            snackBarState.checkShowToast(result)
+                            if (result.isSuccess) {
+                                onBackPressed.invoke()
+                            }
                         }
                     }
                 }
@@ -126,17 +130,13 @@ private fun ArmControl(
         val (lightEffect, enable) = armUIState.lightEffectData ?: return@find false
         it.id == lightEffect.value && enable
     })
-    val customActionList = remember { viewModel.customActionList }
+    val customActionList = remember { Constants.customActionList }
     var selectCustomAction by remember(armUIState.customActionName) {
         mutableStateOf(customActionList.find {
             it == armUIState.customActionName
         } ?: customActionList.first())
     }
-
-    var volume by remember { mutableIntStateOf(armUIState.volume) }
-    LaunchedEffect(armUIState.volume) {
-        volume = armUIState.volume
-    }
+    var volume by rememberSyncedState(armUIState.volume)
     ModeView(
         items = Mode.allMode,
         title = "Mode",
@@ -215,7 +215,10 @@ private fun ArmControl(
             volume = it
         },
         onValueComplete = {
-            viewModel.setVolume(it)
+            scope.launch {
+                val result = viewModel.setVolume(it)
+                snackBarState.checkShowToast(result)
+            }
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -294,7 +297,10 @@ private fun LightingControl(
                         viewModel.controlHsv(h, s, v)
                     },
                     onHsvComplete = { h, s, v ->
-                        viewModel.setHsv(h, s, v)
+                        scope.launch {
+                            val result = viewModel.setHsv(h, s, v)
+                            snackBarState.checkShowToast(result)
+                        }
                     })
             } else {
                 WhiteModePicker(
@@ -304,13 +310,21 @@ private fun LightingControl(
                         viewModel.controlCctBrightness(deviceState.cctBrightness.cct, it)
                     },
                     onBrightnessComplete = {
-                        viewModel.setCctBrightness(deviceState.cctBrightness.cct, it)
+                        scope.launch {
+                            val cct = deviceState.cctBrightness.cct
+                            val result = viewModel.setCctBrightness(cct, it)
+                            snackBarState.checkShowToast(result)
+                        }
                     },
                     onCCTChanged = { cct, color ->
                         viewModel.controlCctBrightness(cct, deviceState.cctBrightness.brightness)
                     },
                     onCCTComplete = { cct, color ->
-                        viewModel.setCctBrightness(cct, deviceState.cctBrightness.brightness)
+                        scope.launch {
+                            val brightness = deviceState.cctBrightness.brightness
+                            val result = viewModel.setCctBrightness(cct, brightness)
+                            snackBarState.checkShowToast(result)
+                        }
                     }
                 )
             }

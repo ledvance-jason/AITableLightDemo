@@ -11,6 +11,6 @@ import com.thingclips.smart.sdk.bean.DeviceBean
  */
 interface ITuyaDeviceApi {
     suspend fun publishDps(devId: String, command: JSONObject?): Result<Boolean>
-    suspend fun deleteDevice(devId: String, isReset: Boolean): Boolean
+    suspend fun deleteDevice(devId: String, isReset: Boolean): Result<Boolean>
     fun getDevice(devId: String): DeviceBean?
 }

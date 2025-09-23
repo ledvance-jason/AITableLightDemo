@@ -100,19 +100,19 @@ internal class TuyaDeviceApi @Inject constructor() : ITuyaDeviceApi {
             }
         }
 
-    override suspend fun deleteDevice(devId: String, isReset: Boolean) =
+    override suspend fun deleteDevice(devId: String, isReset: Boolean): Result<Boolean> =
         suspendCancellableCoroutine {
             Timber.tag(TAG).i("deleteDevice: devId->$devId")
             val thingDevice = ThingHomeSdk.newDeviceInstance(devId)
             val callback = object : IResultCallback {
                 override fun onError(code: String?, error: String?) {
                     Timber.tag(TAG).e("deleteDevice(isReset:$isReset) code:$code, error:$error")
-                    it.takeIf { it.isActive }?.resume(false)
+                    it.takeIf { it.isActive }?.resume(Result.failure(Throwable(error)))
                 }
 
                 override fun onSuccess() {
                     Timber.tag(TAG).i("deleteDevice(isReset:$isReset) onSuccess")
-                    it.takeIf { it.isActive }?.resume(true)
+                    it.takeIf { it.isActive }?.resume(Result.success(true))
                 }
             }
             if (isReset) {

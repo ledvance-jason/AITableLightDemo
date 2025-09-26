@@ -85,6 +85,7 @@ private fun ScenesItem(
     modifier: Modifier = Modifier,
     onItemClick: (ISceneItem) -> Unit
 ) {
+    val isShowIcon = scenes.iconResId > 0
     Row(
         modifier = Modifier
             .height(48.dp)
@@ -103,20 +104,22 @@ private fun ScenesItem(
                 onItemClick.invoke(scenes)
             }),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = if (isShowIcon) Arrangement.Start else Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(scenes.iconResId),
-            contentDescription = scenes.title,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier
-                .padding(start = 6.dp, top = 5.dp)
-                .width(24.dp)
-        )
+        if (isShowIcon) {
+            Image(
+                painter = painterResource(scenes.iconResId),
+                contentDescription = scenes.title,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .padding(start = 5.dp, top = 5.dp, end = 5.dp)
+                    .width(24.dp)
+            )
+        }
         Text(
             text = scenes.title,
             color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.title,
             style = AppTheme.typography.bodyMedium,
-            modifier = Modifier.padding(start = 5.dp)
         )
     }
 }

@@ -2,6 +2,7 @@ package com.ledvance.ai.light.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -31,10 +34,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +67,7 @@ import com.ledvance.ui.component.workmode.WhiteModePicker
 import com.ledvance.ui.extensions.clipWithBorder
 import com.ledvance.ui.extensions.debouncedClickable
 import com.ledvance.ui.extensions.rememberSyncedState
+import com.ledvance.ui.extensions.toDp
 import com.ledvance.ui.theme.AppTheme
 import com.ledvance.utils.extensions.getBoolean
 import kotlinx.coroutines.flow.map
@@ -82,7 +89,7 @@ fun DevicePanelScreen(
         it.create(devId)
     }
 ) {
-    val context= LocalContext.current
+    val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val enableDeviceDeleteButton by DataStoreKeys.enableDeviceDeleteButton.getBoolean()
         .map { it ?: false }
@@ -146,6 +153,9 @@ private fun ArmControl(
     onGotoExploreMode: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
+    val enableEditCustomAction by DataStoreKeys.enableEditCustomAction.getBoolean()
+        .map { it ?: false }
+        .collectAsStateWithLifecycle(false)
     val armUIState by viewModel.armUIStateFlow.collectAsStateWithLifecycle()
     val selectedScene by rememberUpdatedState(Scene.allScenes.find {
         val (scene, enable) = armUIState.sceneData ?: return@find false
@@ -162,6 +172,7 @@ private fun ArmControl(
         } ?: customActionList.first())
     }
     var volume by rememberSyncedState(armUIState.volume)
+    var customAction by remember { mutableStateOf("") }
     ModeView(
         items = Mode.allMode,
         title = "Mode",
@@ -252,6 +263,61 @@ private fun ArmControl(
             scope.launch {
                 val result = viewModel.setCustomAction(selectCustomAction)
                 snackBarState.checkShowToast(result)
+            }
+        }
+    }
+
+    if (enableEditCustomAction) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+                    .height(48.dp)
+                    .border(
+                        width = 1.toDp(),
+                        color = AppTheme.colors.textFieldBorder,
+                        shape = RoundedCornerShape(10.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                BasicTextField(
+                    value = customAction,
+                    onValueChange = {
+                        customAction = it
+                    },
+                    textStyle = AppTheme.typography.bodyMedium.copy(
+                        color = AppTheme.colors.textFieldContent,
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    cursorBrush = SolidColor(Color.White),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp)
+                )
+            }
+            LedvanceButton(
+                text = "Perform",
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .weight(1f),
+                contentPadding = PaddingValues(0.dp),
+            ) {
+                if (customAction.isEmpty()) {
+                    return@LedvanceButton
+                }
+                scope.launch {
+                    val result = viewModel.setCustomAction(customAction)
+                    snackBarState.checkShowToast(result)
+                }
             }
         }
     }

@@ -44,6 +44,9 @@ fun TestModeScreen(onBackPressed: (() -> Unit)? = null) {
     val enableDeviceDeleteButton by DataStoreKeys.enableDeviceDeleteButton.getBoolean()
         .map { it ?: false }
         .collectAsStateWithLifecycle(false)
+    val enableEditCustomAction by DataStoreKeys.enableEditCustomAction.getBoolean()
+        .map { it ?: false }
+        .collectAsStateWithLifecycle(false)
     var loading by remember { mutableStateOf(false) }
     if (loading) {
         LoadingCard()
@@ -75,6 +78,28 @@ fun TestModeScreen(onBackPressed: (() -> Unit)? = null) {
                     onCheckedChange = {
                         scope.launch {
                             DataStoreKeys.enableDeviceDeleteButton.setBoolean(it)
+                        }
+                    },
+                    modifier = Modifier,
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Display edit custom action",
+                    color = AppTheme.colors.title,
+                    style = AppTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                LedvanceSwitch(
+                    checked = enableEditCustomAction,
+                    onCheckedChange = {
+                        scope.launch {
+                            DataStoreKeys.enableEditCustomAction.setBoolean(it)
                         }
                     },
                     modifier = Modifier,

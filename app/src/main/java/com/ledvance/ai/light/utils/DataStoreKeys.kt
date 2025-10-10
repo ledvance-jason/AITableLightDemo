@@ -12,4 +12,5 @@ import androidx.datastore.preferences.core.intPreferencesKey
 object DataStoreKeys {
     val darkThemeMode = intPreferencesKey("dark_theme_mode")
     val enableDeviceDeleteButton = booleanPreferencesKey("enableDeviceDeleteButton")
+    val enableEditCustomAction = booleanPreferencesKey("enableEditCustomAction")
 }

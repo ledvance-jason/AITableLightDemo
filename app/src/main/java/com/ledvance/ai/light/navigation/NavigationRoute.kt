@@ -30,3 +30,6 @@ data object AddDevicesRoute : NavigationRoute
 
 @Serializable
 data object SelectWiFiNetwork : NavigationRoute
+
+@Serializable
+data class ExploreModeRoute(val devName: String) : NavigationRoute

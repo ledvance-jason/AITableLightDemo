@@ -50,4 +50,12 @@
         <item name="status_bg_color_75">@color/status_bg_color_75</item>
         <item name="status_bg_color_90">@color/status_bg_color_90</item>
     </style>
+
+    <style name="AppFullScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item> <!-- 无标题栏 -->
+        <item name="windowActionBar">false</item> <!-- 无ActionBar -->
+        <item name="android:windowFullscreen">true</item> <!-- 全屏 -->
+        <item name="android:windowContentOverlay">@null</item> <!-- 去除内容覆盖层 -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
 </resources>

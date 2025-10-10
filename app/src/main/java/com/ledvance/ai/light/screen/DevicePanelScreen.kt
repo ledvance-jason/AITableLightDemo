@@ -1,9 +1,13 @@
 package com.ledvance.ai.light.screen
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +27,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,6 +42,7 @@ import com.ledvance.ai.light.ui.ScenesView
 import com.ledvance.ai.light.utils.Constants
 import com.ledvance.ai.light.utils.DataStoreKeys
 import com.ledvance.ai.light.viewmodel.DevicePanelViewModel
+import com.ledvance.ui.R
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvancePopupDropdown
 import com.ledvance.ui.component.LedvanceRadioGroup
@@ -47,6 +55,7 @@ import com.ledvance.ui.component.rememberSnackBarState
 import com.ledvance.ui.component.workmode.ColorModePicker
 import com.ledvance.ui.component.workmode.WhiteModePicker
 import com.ledvance.ui.extensions.clipWithBorder
+import com.ledvance.ui.extensions.debouncedClickable
 import com.ledvance.ui.extensions.rememberSyncedState
 import com.ledvance.ui.theme.AppTheme
 import com.ledvance.utils.extensions.getBoolean
@@ -63,6 +72,7 @@ import kotlinx.coroutines.launch
 fun DevicePanelScreen(
     devId: String,
     devName: String,
+    onGotoExploreMode: () -> Unit,
     onBackPressed: () -> Unit,
     viewModel: DevicePanelViewModel = hiltViewModel<DevicePanelViewModel, DevicePanelViewModel.Factory> {
         it.create(devId)
@@ -91,7 +101,11 @@ fun DevicePanelScreen(
         ) {
 
             LightingControl(viewModel = viewModel, snackBarState = snackBarState)
-            ArmControl(viewModel = viewModel, snackBarState = snackBarState)
+            ArmControl(
+                viewModel = viewModel,
+                snackBarState = snackBarState,
+                onGotoExploreMode = onGotoExploreMode
+            )
 
             if (enableDeviceDeleteButton) {
                 LedvanceButton(
@@ -119,6 +133,7 @@ fun DevicePanelScreen(
 private fun ArmControl(
     viewModel: DevicePanelViewModel,
     snackBarState: SnackbarHostState,
+    onGotoExploreMode: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val armUIState by viewModel.armUIStateFlow.collectAsStateWithLifecycle()
@@ -148,6 +163,34 @@ private fun ArmControl(
             }
         }
     )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp)
+            .aspectRatio(ratio = 4 / 1f)
+            .clip(shape = RoundedCornerShape(8.dp))
+            .debouncedClickable(onClick = onGotoExploreMode),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Image(
+            painter = painterResource(R.drawable.icon_mode_explore),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.Crop
+        )
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+        )
+        Text(
+            text = "Explore Mode",
+            color = Color.White,
+            style = AppTheme.typography.titleMedium,
+        )
+    }
 
     ScenesView(
         modifier = Modifier.padding(top = 20.dp),

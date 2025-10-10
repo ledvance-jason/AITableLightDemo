@@ -12,11 +12,11 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:hardwareAccelerated="true"
         android:theme="@style/Base_BizBundle_Theme"
         tools:replace="android:supportsRtl,android:allowBackup,android:theme">
         <activity
@@ -33,6 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.ledvance.ai.light.ExploreModeActivity"
+            android:theme="@style/AppFullScreenTheme"
+            android:configChanges="uiMode|screenLayout|screenSize|orientation"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

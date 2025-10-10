@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.thingsmart.bizbundle.family)
     implementation(libs.thingsmart.bizbundle.deviceactivator)
     implementation(libs.thingsmart.bizbundle.qrcode)
+    implementation(libs.thingsmart.bizbundle.panelmore)
     implementation(libs.fastjson)
     implementation(libs.okhttp3.urlconnection)
     implementation(libs.startup.runtime)

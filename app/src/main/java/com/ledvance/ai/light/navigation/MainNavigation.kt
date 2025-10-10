@@ -15,6 +15,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.ledvance.ai.light.screen.AddDevicesScreen
 import com.ledvance.ai.light.screen.DevicePanelScreen
+import com.ledvance.ai.light.screen.ExploreModeScreen
 import com.ledvance.ai.light.screen.HomeScreen
 import com.ledvance.ai.light.screen.LoginScreen
 import com.ledvance.ai.light.screen.TestModeScreen
@@ -73,9 +74,15 @@ fun MainNavigation(userViewModel: UserViewModel = hiltViewModel()) {
                 })
             }
             entry<DevicePanelRoute> {
-                DevicePanelScreen(devId = it.devId, devName = it.devName, onBackPressed = {
-                    backStack.removeLastOrNull()
-                })
+                DevicePanelScreen(
+                    devId = it.devId, devName = it.devName,
+                    onGotoExploreMode = {
+                        backStack.add(ExploreModeRoute(devName = it.devName))
+                    },
+                    onBackPressed = {
+                        backStack.removeLastOrNull()
+                    },
+                )
             }
             entry<TestModeRoute> {
                 TestModeScreen(onBackPressed = {
@@ -85,6 +92,12 @@ fun MainNavigation(userViewModel: UserViewModel = hiltViewModel()) {
 
             entry<AddDevicesRoute> {
                 AddDevicesScreen(onBackPressed = {
+                    backStack.removeLastOrNull()
+                })
+            }
+
+            entry<ExploreModeRoute> {
+                ExploreModeScreen(title = it.devName, onBackPressed = {
                     backStack.removeLastOrNull()
                 })
             }

@@ -111,7 +111,7 @@ fun LedvanceScreen(
                         LedvanceTopLayout(
                             backTitle = backTitle,
                             onBackClick = onBackPressed,
-                            rightIconPainter = actionIconPainter,
+                            rightIconPainter = actionIconPainter.takeIf { !enableTitleActionIcon },
                             onRightIconClick = onActionPressed,
                             rightIconContentDescription = rightIconContentDescription
                         )

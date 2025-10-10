@@ -1,0 +1,18 @@
+{
+  "deviceEdit": [
+    {
+      "name": "deviceEdit",
+      "items": [
+        {
+          "cellType": "dev_icon"
+        },
+        {
+          "cellType": "set_icon"
+        },
+        {
+          "cellType": "set_name"
+        }
+      ]
+    }
+  ]
+}

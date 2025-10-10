@@ -66,7 +66,8 @@ fun DeviceItem(
                     painter = rememberAsyncImagePainter(device.iconUrl),
                     contentDescription = "",
                     modifier = Modifier
-                        .size(40.dp),
+                        .size(40.dp)
+                        .clip(shape = RoundedCornerShape(6.dp)),
                     colorFilter = if (!isOnline) colorFilter else null
                 )
                 Spacer(modifier = Modifier.weight(1f))

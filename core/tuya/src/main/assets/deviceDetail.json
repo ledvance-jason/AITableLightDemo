@@ -1,0 +1,13 @@
+[
+  {
+    "name": "headerSection",
+    "items": [
+      {
+        "cellType": "header"
+      },
+      {
+        "cellType": "device_info"
+      }
+    ]
+  }
+]

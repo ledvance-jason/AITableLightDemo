@@ -1,6 +1,10 @@
 package com.ledvance.tuya.ktx
 
+import android.content.Context
+import androidx.core.os.bundleOf
 import com.thingclips.smart.android.device.bean.SchemaBean
+import com.thingclips.smart.api.router.UrlBuilder
+import com.thingclips.smart.api.router.UrlRouter
 import com.thingclips.smart.sdk.bean.DeviceBean
 
 /**
@@ -40,3 +44,17 @@ fun DeviceBean.getDpSchemaList(): Collection<SchemaBean> {
 fun DeviceBean.getDpCodeSchemaMap(): Map<String, SchemaBean> {
     return productBean?.schemaInfo?.dpCodeSchemaMap ?: mapOf()
 }
+
+fun DeviceBean.gotoPanelMore(context: Context) {
+    val bundle = bundleOf(
+        "action" to "gotoPanelMore",
+        "extra_panel_more_type" to 2,
+        "extra_panel_dev_id" to devId,
+        "extra_panel_name" to name,
+        "extra_panel_group_id" to -1
+    )
+    val urlBuilder = UrlBuilder(context, "panelAction")
+        .putExtras(bundle)
+    UrlRouter.execute(urlBuilder)
+}
+

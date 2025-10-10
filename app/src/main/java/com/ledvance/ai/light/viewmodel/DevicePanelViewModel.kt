@@ -1,5 +1,6 @@
 package com.ledvance.ai.light.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledvance.tuya.beans.ArmLightEffect
@@ -13,6 +14,7 @@ import com.ledvance.tuya.beans.WorkMode
 import com.ledvance.tuya.command.controller.arm.ArmControllerFactory
 import com.ledvance.tuya.command.controller.light.LightControllerFactory
 import com.ledvance.tuya.data.repo.ITuyaRepo
+import com.ledvance.tuya.ktx.gotoPanelMore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -67,24 +69,6 @@ class DevicePanelViewModel @AssistedInject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ArmUIState()
-    )
-
-    val customActionList = listOf(
-        "cengceng",
-        "daiji",
-        "diantou",
-        "huanxing",
-        "jingkong",
-        "kaiji",
-        "kaixin",
-        "qingxv",
-        "shengqi",
-        "shiluo",
-        "shoubu",
-        "wudao01",
-        "wudao02",
-        "xuexi",
-        "yangtou"
     )
 
     init {
@@ -184,6 +168,10 @@ class DevicePanelViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         lightController.release()
+    }
+
+    fun gotoDeviceSettings(context: Context) {
+        tuyaRepo.getDeviceApi().getDevice(devId)?.gotoPanelMore(context)
     }
 
     data class DevicePanelUIState(

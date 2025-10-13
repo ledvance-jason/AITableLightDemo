@@ -98,7 +98,7 @@ fun HomeScreen(
                             text = "Add device",
                             modifier = Modifier.padding(horizontal = 100.dp)
                         ) {
-                            onGotoAddDevices.invoke()
+                            TuyaSdkManager.openScan(context)
                         }
                     }
                 }

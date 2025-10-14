@@ -20,7 +20,9 @@ enum class Scene(override val title: String, override val iconResId: Int, overri
     Sunrise("Sunrise", R.drawable.icon_scenes_sunrise, ArmScene.Sunrise.value),
     Rainbow("Rainbow", R.drawable.icon_scenes_rainbow, ArmScene.Rainbow.value),
     EyeCare("Eye Care", 0, ArmLightEffect.EyeCare.value),
-    ColorMood("Color Mood", 0, ArmLightEffect.ColorMood.value),
+    EmotionMode("Emotion Mode", 0, ArmLightEffect.EmotionMode.value),
+    StudyMode("Study Mode", 0, ArmLightEffect.StudyMode.value),
+    StartupGuide("Startup Guide", 0, ArmLightEffect.StartupGuide.value),
     FocusReminder(
         "Focus Reminder",
         0,
@@ -87,6 +89,21 @@ enum class Scene(override val title: String, override val iconResId: Int, overri
         0,
         ArmLightEffect.ShakeHead.value
     ),
+    WakeUp(
+        "Wake Up",
+        0,
+        ArmLightEffect.WakeUp.value
+    ),
+    PowerOff(
+        "Power Off",
+        0,
+        ArmLightEffect.PowerOff.value
+    ),
+    DailyMode(
+        "Daily Mode",
+        0,
+        ArmLightEffect.DailyMode.value
+    ),
     ;
 
     companion object Companion {
@@ -101,7 +118,9 @@ enum class Scene(override val title: String, override val iconResId: Int, overri
 
         val lightEffect = listOf(
             EyeCare,
-            ColorMood,
+            EmotionMode,
+            StudyMode,
+            StartupGuide,
             FocusReminder,
             CatNuzzle,
             CatHeadTilt,
@@ -115,6 +134,9 @@ enum class Scene(override val title: String, override val iconResId: Int, overri
             DanceRelaxing,
             Nod,
             ShakeHead,
+            WakeUp,
+            PowerOff,
+            DailyMode,
         )
     }
 }

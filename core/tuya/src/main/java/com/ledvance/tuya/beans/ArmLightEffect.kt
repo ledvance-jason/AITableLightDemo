@@ -9,7 +9,9 @@ package com.ledvance.tuya.beans
 enum class ArmLightEffect(val value: Int) {
     Unknown(0),
     EyeCare(1),
-    ColorMood(2),
+    EmotionMode(2),
+    StudyMode(3),
+    StartupGuide(4),
     FocusReminder(5),
     CatNuzzle(6),             // 猫咪蹭一蹭（左右）
     CatHeadTilt(7),           // 猫咪仰头（上下）
@@ -22,7 +24,10 @@ enum class ArmLightEffect(val value: Int) {
     DanceHappy(14),           // 舞蹈动作组1（开心）
     DanceRelaxing(15),           // 舞蹈动作组2（舒缓）
     Nod(16),                   // 点头（认可）
-    ShakeHead(17);             // 摇头（否定）
+    ShakeHead(17),            // 摇头（否定）
+    WakeUp(18),            // 唤醒
+    PowerOff(19),             // 关机
+    DailyMode(20),           // 日常模式
     ;
 
     companion object {

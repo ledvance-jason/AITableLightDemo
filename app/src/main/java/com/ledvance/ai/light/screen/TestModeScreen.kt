@@ -15,16 +15,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ledvance.ai.light.test.BuildConfig
 import com.ledvance.ai.light.utils.DataStoreKeys
+import com.ledvance.ai.light.utils.launchCustomChromeTab
 import com.ledvance.log.LogManager
 import com.ledvance.ui.component.LedvanceButton
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LedvanceSwitch
 import com.ledvance.ui.component.LoadingCard
+import com.ledvance.ui.extensions.debouncedClickable
 import com.ledvance.ui.theme.AppTheme
 import com.ledvance.utils.extensions.getBoolean
 import com.ledvance.utils.extensions.setBoolean
@@ -123,6 +129,21 @@ fun TestModeScreen(onBackPressed: (() -> Unit)? = null) {
                 style = AppTheme.typography.bodyMedium,
                 color = AppTheme.colors.body,
                 modifier = Modifier.padding(vertical = 10.dp)
+            )
+            Text(
+                text = "Download",
+                style = AppTheme.typography.bodyMedium,
+                color = Color.Blue,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .padding(bottom = 10.dp)
+                    .debouncedClickable(onClick = {
+                        launchCustomChromeTab(
+                            context = context,
+                            uri = "https://www.pgyer.com/aitablelight".toUri(),
+                            toolbarColor = Color.White.toArgb()
+                        )
+                    })
             )
         }
     }

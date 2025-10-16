@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
     implementation(libs.fastjson)
+    implementation(libs.browser)
 
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui.compose)

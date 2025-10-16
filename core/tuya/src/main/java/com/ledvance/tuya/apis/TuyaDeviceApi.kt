@@ -30,10 +30,10 @@ import kotlin.coroutines.resume
 internal class TuyaDeviceApi @Inject constructor() : ITuyaDeviceApi {
     private val TAG = "TuyaDeviceApi"
 
-    private suspend fun checkThingMode(devId: String): Boolean = withContext(Dispatchers.IO) {
+    private suspend fun checkThingModel(devId: String): Boolean = withContext(Dispatchers.IO) {
         val deviceBean = ThingOSDevice.getDeviceBean(devId) ?: return@withContext false
         val isTuyaLinkDevice = deviceBean.isTuyaLinkDevice()
-        Timber.tag(TAG).i("fetchThingMode: isTuyaLinkDevice:$isTuyaLinkDevice")
+        Timber.tag(TAG).i("fetchThingModel: isTuyaLinkDevice:$isTuyaLinkDevice")
         if (!isTuyaLinkDevice) {
             return@withContext true
         }
@@ -41,17 +41,17 @@ internal class TuyaDeviceApi @Inject constructor() : ITuyaDeviceApi {
             return@withContext true
         }
         val productId = deviceBean.getProductId()
-        Timber.tag(TAG).i("fetchThingMode: devId:$devId, productId:$productId")
+        Timber.tag(TAG).i("fetchThingModel: devId:$devId, productId:$productId")
         return@withContext suspendCancellableCoroutine {
             ThingOSDevice.getDeviceOperator().getThingModelWithProductId(productId, object :
                 IThingDataCallback<ThingSmartThingModel> {
                 override fun onSuccess(result: ThingSmartThingModel?) {
-                    Timber.tag(TAG).i("fetchThingMode onSuccess: ${result?.services.toJson()}")
+                    Timber.tag(TAG).i("fetchThingModel onSuccess: ${result?.services.toJson()}")
                     it.takeIf { it.isActive }?.resume(true)
                 }
 
                 override fun onError(errorCode: String?, errorMessage: String?) {
-                    Timber.tag(TAG).e("fetchThingMode onError: code:$errorCode, msg:$errorMessage")
+                    Timber.tag(TAG).e("fetchThingModel onError: code:$errorCode, msg:$errorMessage")
                     it.takeIf { it.isActive }?.resume(false)
                 }
 
@@ -61,8 +61,8 @@ internal class TuyaDeviceApi @Inject constructor() : ITuyaDeviceApi {
 
     override suspend fun publishDps(devId: String, command: JSONObject?): Result<Boolean> =
         withContext(Dispatchers.IO) {
-            if (!checkThingMode(devId)) {
-                return@withContext Result.failure(Throwable("thing mode fetch failed!"))
+            if (!checkThingModel(devId)) {
+                return@withContext Result.failure(Throwable("thing model fetch failed!"))
             }
             Timber.tag(TAG).i("publishDps($devId): $command")
             command ?: return@withContext Result.failure(Throwable("command is null!"))

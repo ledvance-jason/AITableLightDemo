@@ -47,14 +47,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ledvance.ai.light.model.Mode
 import com.ledvance.ai.light.model.Scene
 import com.ledvance.ai.light.model.WorkModeSegment
+import com.ledvance.ai.light.ui.CustomActionView
 import com.ledvance.ai.light.ui.ModeView
 import com.ledvance.ai.light.ui.ScenesView
-import com.ledvance.ai.light.utils.Constants
 import com.ledvance.ai.light.utils.DataStoreKeys
 import com.ledvance.ai.light.viewmodel.DevicePanelViewModel
+import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.ui.R
 import com.ledvance.ui.component.LedvanceButton
-import com.ledvance.ui.component.LedvancePopupDropdown
 import com.ledvance.ui.component.LedvanceRadioGroup
 import com.ledvance.ui.component.LedvanceScreen
 import com.ledvance.ui.component.LedvanceSlider
@@ -165,14 +165,14 @@ private fun ArmControl(
         val (lightEffect, enable) = armUIState.lightEffectData ?: return@find false
         it.id == lightEffect.value && enable
     })
-    val customActionList = remember { Constants.customActionList }
-    var selectCustomAction by remember(armUIState.customActionName) {
-        mutableStateOf(customActionList.find {
-            it == armUIState.customActionName
-        } ?: customActionList.first())
-    }
+    val customActionList = remember { ArmCustomAction.allAction }
+
     var volume by rememberSyncedState(armUIState.volume)
     var customAction by remember { mutableStateOf("") }
+    var scenesExpanded by remember { mutableStateOf(false) }
+    var lightEffectExpanded by remember { mutableStateOf(true) }
+    var customActionExpanded by remember { mutableStateOf(true) }
+
     ModeView(
         items = Mode.allMode,
         title = "Mode",
@@ -213,11 +213,16 @@ private fun ArmControl(
         )
     }
 
+
     ScenesView(
         modifier = Modifier.padding(top = 20.dp),
         selectedItem = selectedScene,
         items = Scene.allScenes,
-        title = "Scenes"
+        title = "Scenes",
+        expanded = scenesExpanded,
+        onExpanded = {
+            scenesExpanded = it
+        }
     ) {
         scope.launch {
             val result = viewModel.setScene(it.id)
@@ -230,7 +235,11 @@ private fun ArmControl(
         items = Scene.lightEffect,
         selectedItem = selectedLightEffect,
         maxItemsInEachRow = 2,
-        title = "Light Effect"
+        title = "Light Effect",
+        expanded = lightEffectExpanded,
+        onExpanded = {
+            lightEffectExpanded = it
+        }
     ) {
         scope.launch {
             val result = viewModel.setLightEffect(it.id)
@@ -238,32 +247,21 @@ private fun ArmControl(
         }
     }
 
-    Text(
-        text = "Custom Actions",
-        color = AppTheme.colors.title,
-        style = AppTheme.typography.titleMedium,
-        modifier = Modifier.padding(vertical = 15.dp)
-    )
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        LedvancePopupDropdown(
-            selectedItem = selectCustomAction,
-            items = customActionList,
-            modifier = Modifier.weight(2f),
-            itemTitle = { it },
-            onItemSelected = {
-                selectCustomAction = it
-            })
-        LedvanceButton(
-            text = "Perform",
-            modifier = Modifier
-                .padding(start = 10.dp)
-                .weight(1f),
-            contentPadding = PaddingValues(0.dp),
-        ) {
-            scope.launch {
-                val result = viewModel.setCustomAction(selectCustomAction)
-                snackBarState.checkShowToast(result)
-            }
+
+    CustomActionView(
+        modifier = Modifier.padding(top = 20.dp),
+        title = "Custom Actions",
+        items = customActionList,
+        selectedItem = armUIState.customAction,
+        maxItemsInEachRow = 2,
+        expanded = customActionExpanded,
+        onExpanded = {
+            customActionExpanded = it
+        }
+    ) {
+        scope.launch {
+            val result = viewModel.setCustomAction(it.content)
+            snackBarState.checkShowToast(result)
         }
     }
 

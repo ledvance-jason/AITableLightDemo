@@ -2,7 +2,6 @@ package com.ledvance.ai.light.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,9 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.ui.R
 import com.ledvance.ui.component.LDVAnimatedVisibility
 import com.ledvance.ui.extensions.debouncedClickable
@@ -38,24 +36,20 @@ import com.ledvance.ui.theme.AppTheme
  * @author : jason yin
  * Email : j.yin@ledvance.com
  * Created date 2025/9/5 10:03
- * Describe : ScenesView
+ * Describe : CustomActionView
  */
-interface ISceneItem {
-    val title: String
-    val iconResId: Int
-    val id: Int
-}
+
 
 @Composable
-fun ScenesView(
-    items: List<ISceneItem>,
+fun CustomActionView(
+    selectedItem: ArmCustomAction?,
+    items: List<ArmCustomAction>,
     modifier: Modifier = Modifier,
-    selectedItem: ISceneItem? = null,
     title: String? = null,
     maxItemsInEachRow: Int = 3,
     expanded: Boolean? = null,
     onExpanded: ((Boolean) -> Unit)? = null,
-    onItemClick: (ISceneItem) -> Unit
+    onItemClick: (ArmCustomAction) -> Unit
 ) {
     Column(modifier = Modifier.then(modifier)) {
         if (!title.isNullOrEmpty()) {
@@ -63,11 +57,9 @@ fun ScenesView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 15.dp)
-                    .clickable(interactionSource = null, indication = null, onClick = {
+                    .clickable(indication = null, interactionSource = null, onClick = {
                         onExpanded?.invoke(expanded?.let { !it } ?: true)
-                    }),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    }), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = title,
@@ -100,9 +92,9 @@ fun ScenesView(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 items.forEach {
-                    ScenesItem(
-                        scenes = it,
-                        isSelected = selectedItem?.id == it.id,
+                    CustomActionItem(
+                        item = it,
+                        isSelected = selectedItem?.content == it.content,
                         modifier = Modifier
                             .weight(1f),
                         onItemClick = onItemClick
@@ -120,13 +112,12 @@ fun ScenesView(
 }
 
 @Composable
-private fun ScenesItem(
-    scenes: ISceneItem,
+private fun CustomActionItem(
+    item: ArmCustomAction,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
-    onItemClick: (ISceneItem) -> Unit
+    onItemClick: (ArmCustomAction) -> Unit
 ) {
-    val isShowIcon = scenes.iconResId > 0
     Row(
         modifier = Modifier
             .height(48.dp)
@@ -142,23 +133,13 @@ private fun ScenesItem(
             )
             .clip(RoundedCornerShape(10.dp))
             .debouncedClickable(onClick = {
-                onItemClick.invoke(scenes)
+                onItemClick.invoke(item)
             }),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = if (isShowIcon) Arrangement.Start else Arrangement.Center
+        horizontalArrangement = Arrangement.Center
     ) {
-        if (isShowIcon) {
-            Image(
-                painter = painterResource(scenes.iconResId),
-                contentDescription = scenes.title,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .padding(start = 5.dp, top = 5.dp, end = 5.dp)
-                    .width(24.dp)
-            )
-        }
         Text(
-            text = scenes.title,
+            text = item.title,
             color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.title,
             style = AppTheme.typography.bodyMedium,
         )

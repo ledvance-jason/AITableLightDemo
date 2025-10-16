@@ -3,6 +3,7 @@ package com.ledvance.ai.light.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ledvance.tuya.beans.ArmCustomAction
 import com.ledvance.tuya.beans.ArmLightEffect
 import com.ledvance.tuya.beans.ArmLightEffectData
 import com.ledvance.tuya.beans.ArmMode
@@ -64,7 +65,8 @@ class DevicePanelViewModel @AssistedInject constructor(
         armController.getVolumeFlow(), armController.getModeFlow(),
         armController.getCustomAction()
     ) { scene, lightEffect, volume, mode, customActionName ->
-        ArmUIState(mode, scene, lightEffect, volume, customActionName)
+        val customAction = ArmCustomAction.of(customActionName)
+        ArmUIState(mode, scene, lightEffect, volume, customAction)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -190,7 +192,7 @@ class DevicePanelViewModel @AssistedInject constructor(
         val sceneData: ArmSceneData? = null,
         val lightEffectData: ArmLightEffectData? = null,
         val volume: Int = 100,
-        val customActionName: String = ""
+        val customAction: ArmCustomAction? = null
     )
 
     @AssistedFactory
